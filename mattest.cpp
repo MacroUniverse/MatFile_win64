@@ -1,8 +1,23 @@
 #include <iostream>
 #include "mat.h"
+#include "nr3.h"
 
-#define BUFSIZE 256
 using namespace std;
+
+mxArray * writemat(MatDoub_I &a)
+{
+	int i, j, m, n;
+	mxArray *pa;
+	m = a.nrows(); n = a.ncols();
+	pa = mxCreateDoubleMatrix(m, n, mxREAL);
+	auto ppa = mxGetPr(pa);
+	for (i = 0; i < m; ++i) {
+		for (j = 0; j < n; ++j) {
+			ppa[m*j + i] = a[i][j];
+		}
+	}
+	return pa;
+}
 
 int main() {
 	MATFile *pmat;
@@ -24,4 +39,19 @@ int main() {
 	/* clean up */
 	mxDestroyArray(pa1);
 	mxDestroyArray(pa3);
+
+	matClose(pmat);
+
+	// use with NR3 matrices
+	MatDoub a;
+	mxArray *pa;
+	a.assign(2, 3, 0.);
+	a[0][0] = 1.; a[0][1] = 2.; a[0][2] = 3.; a[1][2] = 6;
+	a.print();
+	MATFile *pfile;
+	pfile = matOpen("nrMat.mat", "w");
+	pa = writemat(a);
+	matPutVariable(pfile, "a", pa);
+	matClose(pfile);
 }
+

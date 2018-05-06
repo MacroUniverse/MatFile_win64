@@ -1,0 +1,9 @@
+﻿.vs/mattest/v15/ipch/
+.vs/mattest/v15/Browse.VC.db
+Debug/
+Release/
+x64/
+mattest/Debug/
+mattest/Release/
+mattest/x64/
+*.txt
