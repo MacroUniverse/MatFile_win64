@@ -7,3 +7,4 @@ mattest/Debug/
 mattest/Release/
 mattest/x64/
 *.txt
+*.mat
