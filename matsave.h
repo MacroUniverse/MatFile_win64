@@ -1,3 +1,5 @@
+// save vectors and matrices defined in "nr3.h" (see Numerical Recipes) into .mat file for Matlab
+
 #pragma once
 #include "nr3.h"
 #include "mat.h"
