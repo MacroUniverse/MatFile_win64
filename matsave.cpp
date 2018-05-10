@@ -38,7 +38,7 @@ void matsave(const Complex s, const string &varname, MATFile *pfile)
 
 void matsave(VecDoub_I &v, const string &varname, MATFile *pfile)
 {
-	int i, n;
+	Int i, n;
 	mxArray *pv;
 	n = v.size();
 	pv = mxCreateDoubleMatrix(1, n, mxREAL);
@@ -51,7 +51,7 @@ void matsave(VecDoub_I &v, const string &varname, MATFile *pfile)
 
 void matsave(VecComplex_I &v, const string &varname, MATFile *pfile)
 {
-	int i, n;
+	Int i, n;
 	string str;
 	mxArray *pv1, *pv2;
 	n = v.size();
@@ -74,7 +74,7 @@ void matsave(VecComplex_I &v, const string &varname, MATFile *pfile)
 
 void matsave(MatDoub_I &a, const string &varname, MATFile *pfile)
 {
-	int i, j, m, n;
+	Int i, j, m, n;
 	mxArray *pa;
 	m = a.nrows(); n = a.ncols();
 	pa = mxCreateDoubleMatrix(m, n, mxREAL);
@@ -89,7 +89,7 @@ void matsave(MatDoub_I &a, const string &varname, MATFile *pfile)
 
 void matsave(MatComplex_I &a, const string &varname, MATFile *pfile)
 {
-	int i, j, m, n;
+	Int i, j, m, n;
 	string str;
 	mxArray *pa1, *pa2;
 	m = a.nrows(); n = a.ncols();
@@ -136,10 +136,10 @@ void matload(Complex &s, const string &varname, MATFile *pfile)
 
 void matload(VecDoub_O &v, const string &varname, MATFile *pfile)
 {
-	int i, n;
+	Int i, n;
 	mxArray *pv;
 	pv = matGetVariable(pfile, varname.c_str());
-	n = mxGetDimensions(pv)[1];
+	n = (Int)mxGetDimensions(pv)[1];
 	if (v.size() != n) v.resize(n);
 	auto ppv = mxGetPr(pv);
 	for (i = 0; i < n; ++i)
@@ -149,11 +149,11 @@ void matload(VecDoub_O &v, const string &varname, MATFile *pfile)
 
 void matload(VecComplex_O &v, const string &varname, MATFile *pfile)
 {
-	int i, n;
+	Int i, n;
 	mxArray *pv1, *pv2;
 	pv1 = matGetVariable(pfile, (varname + "_R").c_str());
 	pv2 = matGetVariable(pfile, (varname + "_I").c_str());
-	n = mxGetDimensions(pv1)[1];
+	n = (Int)mxGetDimensions(pv1)[1];
 	if (v.size() != n) v.resize(n);
 	auto ppv1 = mxGetPr(pv1);
 	auto ppv2 = mxGetPr(pv2);
@@ -166,10 +166,10 @@ void matload(VecComplex_O &v, const string &varname, MATFile *pfile)
 
 void matload(MatDoub_O &a, const string &varname, MATFile *pfile)
 {
-	int i, j, m, n;
+	Int i, j, m, n;
 	mxArray *pa = matGetVariable(pfile, varname.c_str());
 	const mwSize *sz = mxGetDimensions(pa);
-	m = sz[0]; n = sz[1];
+	m = (Int)sz[0]; n = (Int)sz[1];
 	if (a.nrows() != m || a.ncols() != n) a.resize(m, n);
 	auto ppa = mxGetPr(pa);
 	for (i = 0; i < m; ++i)
@@ -180,12 +180,12 @@ void matload(MatDoub_O &a, const string &varname, MATFile *pfile)
 
 void matload(MatComplex_O &a, const string &varname, MATFile *pfile)
 {
-	int i, j, m, n;
+	Int i, j, m, n;
 	mxArray *pa1, *pa2;
 	pa1 = matGetVariable(pfile, (varname + "_R").c_str());
 	pa2 = matGetVariable(pfile, (varname + "_I").c_str());
 	const mwSize *sz = mxGetDimensions(pa1);
-	m = sz[0]; n = sz[1];
+	m = (Int)sz[0]; n = (Int)sz[1];
 	if (a.nrows() != m || a.ncols() != n) a.resize(m, n);
 	auto ppa1 = mxGetPr(pa1);
 	auto ppa2 = mxGetPr(pa2);
