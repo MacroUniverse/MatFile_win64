@@ -148,6 +148,7 @@
     <ClInclude Include="matrix.h" />
     <ClInclude Include="matsave.h" />
     <ClInclude Include="nr3.h" />
+    <ClInclude Include="nr3plus.h" />
     <ClInclude Include="tmwtypes.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
