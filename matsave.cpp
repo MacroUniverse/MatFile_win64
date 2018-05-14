@@ -113,6 +113,15 @@ void matsave(MatComplex_I &a, const string &varname, MATFile *pfile)
 
 // matload()
 
+void matload(Int &i, const string &varname, MATFile *pfile)
+{
+	mxArray *ps;
+	ps = matGetVariable(pfile, varname.c_str());
+	auto pps = mxGetPr(ps);
+	i = (Int)pps[0];
+	mxDestroyArray(ps);
+}
+
 void matload(Doub &s, const string &varname, MATFile *pfile)
 {
 	mxArray *ps;

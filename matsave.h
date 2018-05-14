@@ -20,6 +20,8 @@ void matsave(MatComplex_I &a, const std::string &varname, MATFile *pfile);
 
 // matload()
 
+void matload(Int &i, const std::string &varname, MATFile *pfile);
+
 void matload(Doub &s, const std::string &varname, MATFile *pfile);
 
 void matload(Complex &s, const std::string &varname, MATFile *pfile);
