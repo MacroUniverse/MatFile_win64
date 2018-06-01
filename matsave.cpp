@@ -168,7 +168,12 @@ void matload(Complex &s, const string &varname, MATFile *pfile)
 {
 	mxArray *ps;
 	ps = matGetVariable(pfile, varname.c_str());
-	s = Complex(mxGetPr(ps)[0], mxGetPi(ps)[0]);
+	auto ppsr = mxGetPr(ps);
+	auto ppsi = mxGetPi(ps);
+	if (ppsi)
+		s = Complex(ppsr[0], ppsi[0]);
+	else
+		s = ppsr[0];
 	mxDestroyArray(ps);
 }
 
@@ -207,8 +212,11 @@ void matload(VecComplex_O &v, const string &varname, MATFile *pfile)
 	v.resize(n);
 	auto ppvr = mxGetPr(pv);
 	auto ppvi = mxGetPi(pv);
-	for (i = 0; i < n; ++i)
-		v[i] = Complex(ppvr[i], ppvi[i]);
+	if (ppvi)
+		for (i = 0; i < n; ++i)
+			v[i] = Complex(ppvr[i], ppvi[i]);
+	else
+		v[i] = ppvr[i];
 	mxDestroyArray(pv);
 }
 
@@ -229,7 +237,7 @@ void matload(MatDoub_O &a, const string &varname, MATFile *pfile)
 
 void matload(MatComplex_O &a, const string &varname, MATFile *pfile)
 {
-	Int i, j, m, n;
+	Int i, j, m, n, ind;
 	mxArray *pa;
 	pa = matGetVariable(pfile, varname.c_str());
 	const mwSize *sz = mxGetDimensions(pa);
@@ -237,9 +245,16 @@ void matload(MatComplex_O &a, const string &varname, MATFile *pfile)
 	a.resize(m, n);
 	auto ppar = mxGetPr(pa);
 	auto ppai = mxGetPi(pa);
-	for (i = 0; i < m; ++i)
-	for (j = 0; j < n; ++j)
-		a[i][j] = Complex(ppar[i + m*j], ppai[i + m*j]);
+	if (ppai)
+		for (i = 0; i < m; ++i)
+		for (j = 0; j < n; ++j){
+			ind = i + m * j;
+			a[i][j] = Complex(ppar[ind], ppai[ind]);
+		}
+	else
+		for (i = 0; i < m; ++i)
+		for (j = 0; j < n; ++j)
+			a[i][j] = ppar[i + m*j];
 	mxDestroyArray(pa);
 }
 
@@ -267,11 +282,17 @@ void matload(Mat3DComplex_O &a, const std::string &varname, MATFile *pfile)
 	a.resize(m, n, q);
 	auto *ppar = mxGetPr(pa);
 	auto *ppai = mxGetPi(pa);
-	for (i = 0; i < m; ++i)
-	for (j = 0; j < n; ++j)
-	for (k = 0; k < q; ++k){
-		ind = i + m*j + mn*k;
-		a[i][j][k] = Complex(ppar[ind], ppai[ind]);
-	}
+	if (ppai)
+		for (i = 0; i < m; ++i)
+		for (j = 0; j < n; ++j)
+		for (k = 0; k < q; ++k){
+			ind = i + m*j + mn*k;
+			a[i][j][k] = Complex(ppar[ind], ppai[ind]);
+		}
+	else
+		for (i = 0; i < m; ++i)
+		for (j = 0; j < n; ++j)
+		for (k = 0; k < q; ++k)
+			a[i][j][k] = ppar[i + m*j + mn*k];
 	mxDestroyArray(pa);
 }
