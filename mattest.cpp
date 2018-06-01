@@ -6,8 +6,8 @@
 
 using namespace std;
 
-int main() {
-
+int main()
+{
 	MATFile *pfile = matOpen("nrMat.mat", "w");
 	Complex I(0, 1);
 
@@ -38,6 +38,21 @@ int main() {
 		pC[i] = 1 + (Doub)i + I * (Doub)i;
 	}
 	matsave(C, "C", pfile);
+
+	// 3d arrays
+	Mat3DDoub A3;
+	A3.resize(2, 2, 2);
+	Doub *pA3 = A3[0][0];
+	for (Int i = 0; i < 8; ++i)
+		pA3[i] = 1. + (Doub)i;
+	matsave(A3, "A3", pfile);
+
+	Mat3DComplex C3;
+	C3.resize(2, 2, 2);
+	Complex *pC3 = C3[0][0];
+	for (Int i = 0; i < 8; ++i)
+		pC3[i] = Complex(1. + (Doub)i, (Doub)i);
+	matsave(C3, "C3", pfile);
 
 	matClose(pfile);
 
@@ -71,6 +86,13 @@ int main() {
 	C.resize(0, 0);
 	matload(C, "C", pfile);
 	disp(C, 16);
+
+	// 3D arrays
+	A3.resize(0, 0, 0);
+	matload(A3, "A3", pfile);
+
+	C3.resize(0, 0, 0);
+	matload(C3, "C3", pfile);
 
 	matClose(pfile);
 }

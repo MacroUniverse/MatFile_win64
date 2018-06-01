@@ -10,6 +10,8 @@ void matsave(const Doub s, const std::string &varname, MATFile *pfile);
 
 void matsave(const Complex s, const std::string &varname, MATFile *pfile);
 
+void matsave(VecInt_I &v, const std::string &varname, MATFile *pfile);
+
 void matsave(VecDoub_I &v, const std::string &varname, MATFile *pfile);
 
 void matsave(VecComplex_I &v, const std::string &varname, MATFile *pfile);
@@ -17,6 +19,10 @@ void matsave(VecComplex_I &v, const std::string &varname, MATFile *pfile);
 void matsave(MatDoub_I &a, const std::string &varname, MATFile *pfile);
 
 void matsave(MatComplex_I &a, const std::string &varname, MATFile *pfile);
+
+void matsave(Mat3DDoub_I &a, const std::string &varname, MATFile *pfile);
+
+void matsave(Mat3DComplex_I &a, const std::string &varname, MATFile *pfile);
 
 // matload()
 
@@ -26,6 +32,8 @@ void matload(Doub &s, const std::string &varname, MATFile *pfile);
 
 void matload(Complex &s, const std::string &varname, MATFile *pfile);
 
+void matload(VecInt_O &v, const std::string &varname, MATFile *pfile);
+
 void matload(VecDoub_O &v, const std::string &varname, MATFile *pfile);
 
 void matload(VecComplex_O &v, const std::string &varname, MATFile *pfile);
@@ -33,3 +41,7 @@ void matload(VecComplex_O &v, const std::string &varname, MATFile *pfile);
 void matload(MatDoub_O &a, const std::string &varname, MATFile *pfile);
 
 void matload(MatComplex_O &a, const std::string &varname, MATFile *pfile);
+
+void matload(Mat3DDoub_O &a, const std::string &varname, MATFile *pfile);
+
+void matload(Mat3DComplex_O &a, const std::string &varname, MATFile *pfile);
