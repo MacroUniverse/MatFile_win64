@@ -16,13 +16,23 @@ void matsave(VecDoub_I &v, const std::string &varname, MATFile *pfile);
 
 void matsave(VecComplex_I &v, const std::string &varname, MATFile *pfile);
 
-void matsave(MatDoub_I &a, const std::string &varname, MATFile *pfile);
+void matsave(MatDoub_I &a, const std::string &varname, MATFile *pfile,
+			const Int step1 = 1, const Int step2 = 1);
 
-void matsave(MatComplex_I &a, const std::string &varname, MATFile *pfile);
+void matsave(MatComplex_I &a, const std::string &varname, MATFile *pfile,
+			const Int step1 = 1, const Int step2 = 1);
 
-void matsave(Mat3DDoub_I &a, const std::string &varname, MATFile *pfile);
+void matsave(Mat3DDoub_I &a, const std::string &varname, MATFile *pfile,
+			const Int step1 = 1, const Int step2 = 1, const Int step3 = 1);
 
-void matsave(Mat3DComplex_I &a, const std::string &varname, MATFile *pfile);
+void matsave(Mat3DDoub_I &a, const std::string &varname, MATFile *pfile,
+			const Char xyz, const VecInt_I &slice, const Int step1 = 1, const Int step2 = 1);
+
+void matsave(Mat3DComplex_I &a, const std::string &varname, MATFile *pfile,
+	const Int step1 = 1, const Int step2 = 1, const Int step3 = 1);
+
+void matsave(Mat3DComplex_I &a, const std::string &varname, MATFile *pfile,
+			const Char xyz, VecInt_I &slice, const Int step1 = 1, const Int step2 = 1);
 
 // matload()
 
