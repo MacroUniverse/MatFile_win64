@@ -657,7 +657,7 @@ void matsave(VecInt_I &v, const std::string &varname, MATFile *pfile)
 
 void matsave(VecDoub_I &v, const std::string &varname, MATFile *pfile)
 {
-	Int i, N = v.size();
+	Int N = v.size();
 	if (N == 0) {
 		*pfile << varname << " = [];\n\n"; return;
 	}
@@ -669,7 +669,7 @@ void matsave(VecDoub_I &v, const std::string &varname, MATFile *pfile)
 
 void matsave(VecComplex_I &v, const string &varname, MATFile *pfile)
 {
-	Int i, N = v.size();
+	Int N = v.size();
 	Doub cr, ci;
 	if (N == 0) {
 		*pfile << varname << " = [];\n\n"; return;
@@ -808,189 +808,222 @@ void matsave(MatComplex_I &a, const string &varname, MATFile *pfile,
 	*pfile << "];\n\n" << endl;
 }
 
-//void matsave(Mat3DDoub_I &a, const std::string &varname, MATFile *pfile,
-//	const Int step1, const Int step2, const Int step3)
-//{
-//	Int i, j, k, m, n, q, mn;
-//	m = a.dim1(); n = a.dim2(); q = a.dim3(); mn = m * n;
-//	if (step1 > 1 || step2 > 1 || step3 > 1) {
-//		m = (m + step1 - 1) / step1; n = (n + step2 - 1) / step2;
-//		q = (q + step3 - 1) / step3;
-//		size_t sz[3]{ (size_t)m,(size_t)n,(size_t)q };
-//
-//		for (i = 0; i < m; ++i)
-//			for (j = 0; j < n; ++j)
-//				for (k = 0; k < q; ++k)
-//					ppa[i + m * j + mn * k] = a[step1*i][step2*j][step3*k];
-//	}
-//	else {
-//		size_t sz[3]{ (size_t)m,(size_t)n,(size_t)q };
-//		pa = mxCreateUninitNumericArray(3, sz, mxDOUBLE_CLASS, mxREAL);
-//		auto ppa = mxGetPr(pa);
-//		for (i = 0; i < m; ++i)
-//			for (j = 0; j < n; ++j)
-//				for (k = 0; k < q; ++k)
-//					ppa[i + m * j + mn * k] = a[i][j][k];
-//	}
-//	matPutVariable(pfile, varname.c_str(), pa);
-//	mxDestroyArray(pa);
-//}
-//
-///* specify xyz = 'x','y' or 'z', and take Nslice at indslice[i]
-//if xyz = 'x', step1 is in y direction, step2 is in z direction, save pa[iy][iz][ix].
-//if xyz = 'y', step1 is in z direction, step2 is in x direction, save pa[iz][ix][iy].
-//if xyz = 'z', step1 is in x direction, step2 is in y direction, save pa[ix][iy][iz]. */
-//void matsave(Mat3DDoub_I &a, const std::string &varname, MATFile *pfile,
-//	const Char xyz, VecInt_I &slice, const Int step1, const Int step2)
-//{
-//	Int i, j, k, m, n, mn, Nslice{ slice.size() };
-//	mxArray *pa;
-//	if (xyz == 'x') {
-//		Int ind;
-//		m = (a.dim2() + step1 - 1) / step1; n = (a.dim3() + step2 - 1) / step2; mn = m * n;
-//		size_t sz[3]{ (size_t)m, (size_t)n, (size_t)Nslice };
-//		pa = mxCreateUninitNumericArray(3, sz, mxDOUBLE_CLASS, mxREAL);
-//		auto ppa = mxGetPr(pa);
-//		for (i = 0; i < Nslice; ++i) {
-//			ind = slice[i];
-//			for (j = 0; j < m; ++j)
-//				for (k = 0; k < n; ++k)
-//					ppa[j + m * k + mn * i] = a[ind][step1*j][step2*k];
-//		}
-//	}
-//	else if (xyz == 'y') {
-//		Int ind;
-//		m = (a.dim3() + step1 - 1) / step1; n = (a.dim1() + step2 - 1) / step2; mn = m * n;
-//		size_t sz[3]{ (size_t)m, (size_t)n, (size_t)Nslice };
-//		pa = mxCreateUninitNumericArray(3, sz, mxDOUBLE_CLASS, mxREAL);
-//		auto ppa = mxGetPr(pa);
-//		for (j = 0; j < Nslice; ++j) {
-//			ind = slice[j];
-//			for (k = 0; k < m; ++k)
-//				for (i = 0; i < n; ++i)
-//					ppa[k + m * i + mn * j] = a[step2*i][ind][step1*k];
-//		}
-//	}
-//	else if (xyz == 'z') {
-//		Int ind;
-//		m = (a.dim1() + step1 - 1) / step1; n = (a.dim2() + step2 - 1) / step2; mn = m * n;
-//		size_t sz[3]{ (size_t)m, (size_t)n, (size_t)Nslice };
-//		pa = mxCreateUninitNumericArray(3, sz, mxDOUBLE_CLASS, mxREAL);
-//		auto ppa = mxGetPr(pa);
-//		for (k = 0; k < Nslice; ++k) {
-//			ind = slice[k];
-//			for (i = 0; i < m; ++i)
-//				for (j = 0; j < n; ++j)
-//					ppa[i + m * j + mn * k] = a[step1*i][step2*j][ind];
-//		}
-//	}
-//	else {
-//		cout << "error! illegal value of xyz" << endl; return;
-//	}
-//	matPutVariable(pfile, varname.c_str(), pa);
-//	mxDestroyArray(pa);
-//}
-//
-//void matsave(Mat3DComplex_I &a, const std::string &varname, MATFile *pfile,
-//	const Int step1, const Int step2, const Int step3)
-//{
-//	Int i, j, k, m, n, q, mn, ind;
-//	mxArray *pa;
-//	Complex c;
-//	m = a.dim1(); n = a.dim2(); q = a.dim3(); mn = m * n;
-//	if (step1 > 1 || step2 > 1 || step3 > 1) {
-//		m = (m + step1 - 1) / step1; n = (n + step2 - 1) / step2;
-//		q = (q + step3 - 1) / step3;
-//		size_t sz[3]{ (size_t)m, (size_t)n, (size_t)q };
-//		pa = mxCreateUninitNumericArray(3, sz, mxDOUBLE_CLASS, mxCOMPLEX);
-//		auto ppar = mxGetPr(pa); auto ppai = mxGetPi(pa);
-//		for (i = 0; i < m; ++i)
-//			for (j = 0; j < n; ++j)
-//				for (k = 0; k < q; ++k) {
-//					ind = i + m * j + mn * k;
-//					c = a[step1*i][step2*j][step3*k];
-//					ppar[ind] = real(c); ppai[ind] = imag(c);
-//				}
-//	}
-//	else {
-//		size_t sz[3]{ (size_t)m, (size_t)n, (size_t)q };
-//		pa = mxCreateUninitNumericArray(3, sz, mxDOUBLE_CLASS, mxCOMPLEX);
-//		auto ppar = mxGetPr(pa); auto ppai = mxGetPi(pa);
-//		for (i = 0; i < m; ++i)
-//			for (j = 0; j < n; ++j)
-//				for (k = 0; k < q; ++k) {
-//					ind = i + m * j + mn * k;
-//					c = a[i][j][k];
-//					ppar[ind] = real(c); ppai[ind] = imag(c);
-//				}
-//	}
-//	matPutVariable(pfile, varname.c_str(), pa);
-//	mxDestroyArray(pa);
-//}
-//
-///* specify xyz = 'x','y' or 'z', and take Nslice at indslice[i]
-//if xyz = 'x', step1 is in y direction, step2 is in z direction, save pa[iy][iz][ix].
-//if xyz = 'y', step1 is in z direction, step2 is in x direction, save pa[iz][ix][iy].
-//if xyz = 'z', step1 is in x direction, step2 is in y direction, save pa[ix][iy][iz]. */
-//void matsave(Mat3DComplex_I &a, const std::string &varname, MATFile *pfile,
-//	const Char xyz, VecInt_I &slice, const Int step1, const Int step2)
-//{
-//	Int i, j, k, m, n, mn, inda, Nslice{ slice.size() };
-//	mxArray *pa;
-//	Complex c;
-//	if (xyz == 'x') {
-//		Int ind;
-//		m = (a.dim2() + step1 - 1) / step1; n = (a.dim3() + step2 - 1) / step2; mn = m * n;
-//		size_t sz[3]{ (size_t)m, (size_t)n, (size_t)Nslice };
-//		pa = mxCreateUninitNumericArray(3, sz, mxDOUBLE_CLASS, mxCOMPLEX);
-//		auto ppar = mxGetPr(pa); auto ppai = mxGetPi(pa);
-//		for (i = 0; i < Nslice; ++i) {
-//			ind = slice[i];
-//			for (j = 0; j < m; ++j)
-//				for (k = 0; k < n; ++k) {
-//					inda = j + m * k + mn * i;
-//					c = a[ind][step1*j][step2*k];
-//					ppar[inda] = real(c); ppai[inda] = imag(c);
-//				}
-//		}
-//	}
-//	else if (xyz == 'y') {
-//		Int ind;
-//		m = (a.dim3() + step1 - 1) / step1; n = (a.dim1() + step2 - 1) / step2; mn = m * n;
-//		size_t sz[3]{ (size_t)m, (size_t)n, (size_t)Nslice };
-//		pa = mxCreateUninitNumericArray(3, sz, mxDOUBLE_CLASS, mxCOMPLEX);
-//		auto ppar = mxGetPr(pa); auto ppai = mxGetPi(pa);
-//		for (j = 0; j < Nslice; ++j) {
-//			ind = slice[j];
-//			for (k = 0; k < m; ++k)
-//				for (i = 0; i < n; ++i) {
-//					inda = k + m * i + mn * j;
-//					c = a[step2*i][ind][step1*k];
-//					ppar[inda] = real(c); ppai[inda] = imag(c);
-//				}
-//		}
-//	}
-//	else if (xyz == 'z') {
-//		Int ind;
-//		m = (a.dim1() + step1 - 1) / step1; n = (a.dim2() + step2 - 1) / step2; mn = m * n;
-//		size_t sz[3]{ (size_t)m, (size_t)n, (size_t)Nslice };
-//		pa = mxCreateUninitNumericArray(3, sz, mxDOUBLE_CLASS, mxCOMPLEX);
-//		auto ppar = mxGetPr(pa); auto ppai = mxGetPi(pa);
-//		for (k = 0; k < Nslice; ++k) {
-//			ind = slice[k];
-//			for (i = 0; i < m; ++i)
-//				for (j = 0; j < n; ++j) {
-//					inda = i + m * j + mn * k;
-//					c = a[step1*i][step2*j][ind];
-//					ppar[inda] = real(c); ppai[inda] = imag(c);
-//				}
-//		}
-//	}
-//	else {
-//		cout << "error! illegal value of xyz" << endl; return;
-//	}
-//	matPutVariable(pfile, varname.c_str(), pa);
-//	mxDestroyArray(pa);
-//}
+void matsave(Mat3DDoub_I &a, const std::string &varname, MATFile *pfile,
+	const Int step1, const Int step2, const Int step3)
+{
+	Int i, j, k, m, n, q, mn;
+	m = a.dim1(); n = a.dim2(); q = a.dim3(); mn = m * n;
+	if (step1 > 1 || step2 > 1 || step3 > 1) {
+		m = (m + step1 - 1) / step1; n = (n + step2 - 1) / step2;
+		q = (q + step3 - 1) / step3;
+		for (k = q-1; k >= 0; --k) {
+			*pfile << varname << "(:,:," << k+1 << ") = [";
+			for (i = 0; i < m; ++i) {
+				for (j = 0; j < n; ++j)
+					*pfile << a[step1*i][step2*j][step3*k] << ',';
+				*pfile << ';';
+			}
+			*pfile << "]; ";
+		}
+		*pfile << "\n\n" << endl;
+	}
+	else {
+		m = (m + step1 - 1) / step1; n = (n + step2 - 1) / step2;
+		q = (q + step3 - 1) / step3;
+		for (k = q - 1; k >= 0; --k) {
+			*pfile << varname << "(:,:," << k+1 << ") = [";
+			for (i = 0; i < m; ++i) {
+				for (j = 0; j < n; ++j)
+					*pfile << a[i][j][k] << ',';
+				*pfile << ';';
+			}
+			*pfile << "]; ";
+		}
+		*pfile << "\n\n" << endl;
+	}
+}
+
+/* specify xyz = 'x','y' or 'z', and take Nslice at indslice[i]
+if xyz = 'x', step1 is in y direction, step2 is in z direction, save pa[iy][iz][ix].
+if xyz = 'y', step1 is in z direction, step2 is in x direction, save pa[iz][ix][iy].
+if xyz = 'z', step1 is in x direction, step2 is in y direction, save pa[ix][iy][iz]. */
+void matsave(Mat3DDoub_I &a, const std::string &varname, MATFile *pfile,
+	const Char xyz, VecInt_I &slice, const Int step1, const Int step2)
+{
+	Int i, j, k, m, n, Nslice{ slice.size() };
+	if (xyz == 'x') {
+		Int ind;
+		m = (a.dim2() + step1 - 1) / step1; n = (a.dim3() + step2 - 1) / step2;
+		for (i = Nslice-1; i >= 0; --i) {
+			*pfile << varname << "(:,:," << i+1 << ") = [";
+			ind = slice[i];
+			for (j = 0; j < m; ++j) {
+				for (k = 0; k < n; ++k)
+					*pfile << a[ind][step1*j][step2*k] << ',';
+				*pfile << ';';
+			}
+			*pfile << "]; ";
+		}
+		*pfile << "\n\n" << endl;
+	}
+	else if (xyz == 'y') {
+		Int ind;
+		m = (a.dim3() + step1 - 1) / step1; n = (a.dim1() + step2 - 1) / step2;
+		for (j = Nslice - 1; j >= 0; --j) {
+			*pfile << varname << "(:,:," << j+1 << ") = [";
+			ind = slice[j];
+			for (k = 0; k < m; ++k) {
+				for (i = 0; i < n; ++i)
+					*pfile << a[step2*i][ind][step1*k] << ',';
+				*pfile << ';';
+			}
+			*pfile << "]; ";
+		}
+		*pfile << "\n\n" << endl;
+	}
+	else if (xyz == 'z') {
+		Int ind;
+		m = (a.dim1() + step1 - 1) / step1; n = (a.dim2() + step2 - 1) / step2;
+		for (k = Nslice-1; k >= 0; --k) {
+			*pfile << varname << "(:,:," << k+1 << ") = [";
+			ind = slice[k];
+			for (i = 0; i < m; ++i) {
+				for (j = 0; j < n; ++j)
+					*pfile << a[step1*i][step2*j][ind] << ',';
+				*pfile << ';';
+			}
+			*pfile << "]; ";
+		}
+		*pfile << "\n\n" << endl;
+	}
+	else {
+		cout << "error! illegal value of xyz" << endl; return;
+	}
+}
+
+void matsave(Mat3DComplex_I &a, const std::string &varname, MATFile *pfile,
+	const Int step1, const Int step2, const Int step3)
+{
+	Int i, j, k, m, n, q;
+	Complex c;
+	Doub cr, ci;
+	m = a.dim1(); n = a.dim2(); q = a.dim3();
+	if (step1 > 1 || step2 > 1 || step3 > 1) {
+		m = (m + step1 - 1) / step1; n = (n + step2 - 1) / step2;
+		q = (q + step3 - 1) / step3;
+		for (k = q - 1; k >= 0; --k) {
+			*pfile << varname << "(:,:," << k+1 << ") = [";
+			for (i = 0; i < m; ++i) {
+				for (j = 0; j < n; ++j) {
+					c = a[step1*i][step2*j][step3*k]; cr = real(c); ci = imag(c);
+					if (ci == 0.)
+						*pfile << cr << ',';
+					else
+						*pfile << cr << '+' << ci << "i,";
+				}
+				*pfile << ';';
+			}
+			*pfile << "]; ";
+		}
+		*pfile << "\n\n" << endl;
+	}
+	else {
+		m = (m + step1 - 1) / step1; n = (n + step2 - 1) / step2;
+		q = (q + step3 - 1) / step3;
+		for (k = q - 1; k >= 0; --k) {
+			*pfile << varname << "(:,:," << k+1 << ") = [";
+			for (i = 0; i < m; ++i) {
+				for (j = 0; j < n; ++j) {
+					c = a[i][j][k]; cr = real(c); ci = imag(c);
+					if (ci == 0.)
+						*pfile << cr << ',';
+					else
+						*pfile << cr << '+' << ci << "i,";
+				}
+				*pfile << ';';
+			}
+			*pfile << "]; ";
+		}
+		*pfile << "\n\n" << endl;
+	}
+}
+
+/* specify xyz = 'x','y' or 'z', and take Nslice at indslice[i]
+if xyz = 'x', step1 is in y direction, step2 is in z direction, save pa[iy][iz][ix].
+if xyz = 'y', step1 is in z direction, step2 is in x direction, save pa[iz][ix][iy].
+if xyz = 'z', step1 is in x direction, step2 is in y direction, save pa[ix][iy][iz]. */
+void matsave(Mat3DComplex_I &a, const std::string &varname, MATFile *pfile,
+	const Char xyz, VecInt_I &slice, const Int step1, const Int step2)
+{
+	Int i, j, k, m, n, Nslice{ slice.size() };
+	Complex c;
+	Doub cr, ci;
+	if (xyz == 'x') {
+		Int ind;
+		m = (a.dim2() + step1 - 1) / step1; n = (a.dim3() + step2 - 1) / step2;
+		for (i = Nslice - 1; i >= 0; --i) {
+			*pfile << varname << "(:,:," << i+1 << ") = [";
+			ind = slice[i];
+			for (j = 0; j < m; ++j) {
+				for (k = 0; k < n; ++k)
+				{
+					c = a[ind][step1*j][step2*k]; cr = real(c); ci = imag(c);
+					if (ci == 0.)
+						*pfile << cr << ',';
+					else
+						*pfile << cr << '+' << ci << "i,";
+				}
+				*pfile << ';';
+			}
+			*pfile << "]; ";
+		}
+		*pfile << "\n\n" << endl;
+	}
+	else if (xyz == 'y') {
+		Int ind;
+		m = (a.dim3() + step1 - 1) / step1; n = (a.dim1() + step2 - 1) / step2;
+		for (j = Nslice-1; j >= 0; --j) {
+			*pfile << varname << "(:,:," << j+1 << ") = [";
+			ind = slice[j];
+			for (k = 0; k < m; ++k) {
+				for (i = 0; i < n; ++i)
+				{
+					c = a[step2*i][ind][step1*k]; cr = real(c); ci = imag(c);
+					if (ci == 0.)
+						*pfile << cr << ',';
+					else
+						*pfile << cr << '+' << ci << "i,";
+				}
+				*pfile << ';';
+			}
+			*pfile << "]; ";
+		}
+		*pfile << "\n\n" << endl;
+	}
+	else if (xyz == 'z') {
+		Int ind;
+		m = (a.dim1() + step1 - 1) / step1; n = (a.dim2() + step2 - 1) / step2;
+		for (k = Nslice - 1; k >= 0; --k) {
+			*pfile << varname << "(:,:," << k+1 << ") = [";
+			ind = slice[k];
+			for (i = 0; i < m; ++i) {
+				for (j = 0; j < n; ++j)
+				{
+					c = a[step1*i][step2*j][ind]; cr = real(c); ci = imag(c);
+					if (ci == 0.)
+						*pfile << cr << ',';
+					else
+						*pfile << cr << '+' << ci << "i,";
+				}
+				*pfile << ';';
+			}
+			*pfile << "]; ";
+		}
+		*pfile << "\n\n" << endl;
+	}
+	else {
+		cout << "error! illegal value of xyz" << endl; return;
+	}
+}
 
 #endif /* MATFILE_BINARY */

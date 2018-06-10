@@ -70,31 +70,31 @@ int main()
 	matsave(C, "Csample", pfile, 2, 3);
 
 	// 3d arrays
-	//Mat3DDoub A3;
-	//A3.resize(2, 2, 2);
-	//Doub *pA3 = A3[0][0];
-	//for (Int i = 0; i < 8; ++i)
-	//	pA3[i] = 1. + (Doub)i;
-	//matsave(A3, "A3", pfile);
+	Mat3DDoub A3;
+	A3.resize(2, 2, 2);
+	Doub *pA3 = A3[0][0];
+	for (Int i = 0; i < 8; ++i)
+		pA3[i] = 1. + (Doub)i;
+	matsave(A3, "A3", pfile);
 
-	//Mat3DComplex C3;
-	//C3.resize(2, 2, 2);
-	//Complex *pC3 = C3[0][0];
-	//for (Int i = 0; i < 8; ++i)
-	//	pC3[i] = Complex(1. + (Doub)i, (Doub)i);
-	//matsave(C3, "C3", pfile);
+	Mat3DComplex C3;
+	C3.resize(2, 2, 2);
+	Complex *pC3 = C3[0][0];
+	for (Int i = 0; i < 8; ++i)
+		pC3[i] = Complex(1. + (Doub)i, (Doub)i);
+	matsave(C3, "C3", pfile);
 
-	//// 3d array slicing + sampling
-	//A3.resize(5, 5, 5);
-	//VecInt slice(3);  slice[0] = 0; slice[1] = 2; slice[2] = 4;
-	//for (Int i = 0; i < 125; ++i)
-	//	A3[0][0][i] = (Doub)i;
-	//matsave(A3, "A3slice", pfile, 'y', slice, 1, 2);
+	// 3d array slicing + sampling
+	A3.resize(5, 5, 5);
+	VecInt slice(3);  slice[0] = 0; slice[1] = 2; slice[2] = 4;
+	for (Int i = 0; i < 125; ++i)
+		A3[0][0][i] = (Doub)i;
+	matsave(A3, "A3slice", pfile, 'y', slice, 1, 2);
 
-	//C3.resize(5, 5, 5);
-	//for (Int i = 0; i < 125; ++i)
-	//	C3[0][0][i] = Complex((Doub)i, i+1.);
-	//matsave(C3, "C3slice", pfile, 'y', slice, 1, 2);
+	C3.resize(5, 5, 5);
+	for (Int i = 0; i < 125; ++i)
+		C3[0][0][i] = Complex((Doub)i, i+1.);
+	matsave(C3, "C3slice", pfile, 'y', slice, 1, 2);
 
 	matClose(pfile);
 
