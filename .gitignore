@@ -8,3 +8,4 @@ mattest/Release/
 mattest/x64/
 *.txt
 *.mat
+*.matt
