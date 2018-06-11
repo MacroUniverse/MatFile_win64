@@ -1,5 +1,4 @@
-﻿.vs/mattest/v15/ipch/
-.vs/mattest/v15/Browse.VC.db
+﻿.vs/mattest/v15/
 Debug/
 Release/
 x64/
@@ -8,4 +7,7 @@ mattest/Release/
 mattest/x64/
 *.txt
 *.mat
+
 *.matt
+
+*.user
