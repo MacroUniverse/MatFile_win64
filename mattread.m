@@ -7,9 +7,9 @@ function mattread(fname)
 %if fileID == -1, error('file does not exist'); end
 %data = fscanf(fileID, '%f');
 data = dlmread(fname);
-datasize = numel(data);
 ind = 1;
-while (ind < datasize)
+nvar = data(end);
+for ii = 1:nvar
     namesize = data(ind); ind = ind + 1;
     varname = char(data(ind : ind+namesize-1))';
     ind = ind + namesize;

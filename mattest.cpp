@@ -101,7 +101,10 @@ int main()
 	// read test
 
 	// scalars
-	//pfile = matOpen("nrMat.mat", "r");
+	pfile = matOpen("nr.mat", "r");
+	Int si;
+	matload(si, "si", pfile);
+
 	//s = 0.;
 	//matload(s, "s", pfile);
 	//cout.precision(16);
@@ -112,9 +115,9 @@ int main()
 	//cout << sc << endl;
 
 	//// vectors
-	//v.resize(0);
-	//matload(v, "v", pfile);
-	//disp(v, 16);
+	v.resize(0);
+	matload(v, "v", pfile);
+	disp(v, 16);
 
 	//vc.resize(0);
 	//matload(vc, "vc", pfile);

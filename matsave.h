@@ -23,9 +23,17 @@
 #ifdef MATFILE_BINARY
 #include "mat.h"
 #else
-typedef std::ofstream MATFile;
 
-MATFile *matOpen(std::string fname, std::string rw);
+// MATFile class for text mode
+struct MATFile {
+	std::ifstream in; // read file
+	std::ofstream out; // write file
+	Int n; // variable numbers
+	std::vector<std::string> names; // variable names
+	std::vector<size_t> ind; // variable positions (line indices)
+};
+
+MATFile *matOpen(std::string fname, const Char *rw);
 
 void matClose(MATFile *pfile);
 #endif
