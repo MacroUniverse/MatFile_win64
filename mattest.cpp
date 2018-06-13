@@ -16,7 +16,8 @@ int main()
 
 	// convert waveInit.mat
 
-	mat2matt("waveInit.mat", "waveInit.matt");
+	//mat2matt("waveInit.mat", "waveInit.matt");
+	mat2matt("nr.mat", "nr.matt");
 
 	/*MATFile *pmatfile = matOpen("waveInit.mat", "r");
 	Int Nx, Ny;
@@ -38,8 +39,6 @@ int main()
 	mattsave(yc, "yc", pmattfile);
 	mattsave(Psi, "Psi", pmattfile);
 	mattClose(pmattfile);*/
-
-	
 	
 	MATFile *pfmat = matOpen("nr.mat", "w");
 	MATTFile *pfmatt = mattOpen("nr.matt", "w");
@@ -159,7 +158,15 @@ int main()
 	// scalars
 	pfmat = matOpen("nr.mat", "r");
 	pfmatt = mattOpen("nr.matt", "r");
+	Uchar s8;
 	Int si;
+	
+	matload(s8, "s8", pfmat);
+	cout << "s8 = " << s8 << '\n' << endl;
+	s8 = 0;
+	mattload(s8, "s8", pfmatt);
+	cout << "s8 = " << s8 << '\n' << endl;
+
 
 	matload(si, "si", pfmat);
 	cout << "si = " << si << '\n' << endl;
@@ -180,10 +187,33 @@ int main()
 	cout << "sc = " << sc << '\n' << endl;
 
 	// vectors
+	v8.resize(0);
+	matload(v8, "v8", pfmat);
+	cout << "v8 = " << endl;
+	cout << (Int)v8[0] << (Int)v8[1] << (Int)v8[2] << endl;
+	// TODO: disp(v8, 16);
+	v8.resize(0);
+	mattload(v8, "v8", pfmatt);
+	cout << "v8 = " << endl;
+	cout << (Int)v8[0] << (Int)v8[1] << (Int)v8[2] << endl;
+	// TODO: disp(v8, 16);
+
+	vi.resize(0);
+	matload(vi, "vi", pfmat);
+	cout << "vi = " << endl;
+	cout << vi[0] << vi[1] << vi[2] << endl;
+	// TODO: disp(vi, 16);
+	vi.resize(0);
+	mattload(vi, "vi", pfmatt);
+	cout << "vi = " << endl;
+	cout << vi[0] << vi[1] << vi[2] << endl;
+	// TODO: disp(vi, 16);
+
 	v.resize(0);
 	matload(v, "v", pfmat);
 	cout << "v = " << endl;
 	disp(v, 16);
+	v.resize(0);
 	mattload(v, "v", pfmatt);
 	cout << "v = " << endl;
 	disp(v, 16);
@@ -192,15 +222,39 @@ int main()
 	matload(vc, "vc", pfmat);
 	cout << "vc = " << endl;
 	disp(vc, 16);
+	vc.resize(0);
 	mattload(vc, "vc", pfmatt);
 	cout << "vc = " << endl;
 	disp(vc, 16);
 
 	// matrices
+	A8.resize(0, 0);
+	matload(A8, "A8", pfmat);
+	cout << "A8 = " << endl;
+	// TODO: disp(A8, 16);
+	cout << (Int)A8[0][0] << (Int)A8[0][1] << '\n' << endl;
+	A.resize(0, 0);
+	mattload(A8, "A8", pfmatt);
+	cout << "A8 = " << endl;
+	// TODO: disp(A8, 16);
+	cout << (Int)A8[0][0] << (Int)A8[0][1] << '\n' << endl;
+
+	AI.resize(0, 0);
+	matload(AI, "AI", pfmat);
+	cout << "AI = " << endl;
+	// TODO: disp(A8, 16);
+	cout << AI[0][0] << AI[0][1] << '\n' << endl;
+	AI.resize(0, 0);
+	mattload(AI, "AI", pfmatt);
+	cout << "AI = " << endl;
+	// TODO: disp(A8, 16);
+	cout << AI[0][0] << AI[0][1] << '\n' << endl;
+
 	A.resize(0, 0);
 	matload(A, "A", pfmat);
 	cout << "A = " << endl;
 	disp(A, 16);
+	A.resize(0, 0);
 	mattload(A, "A", pfmatt);
 	cout << "A = " << endl;
 	disp(A, 16);
@@ -209,6 +263,7 @@ int main()
 	matload(C, "C", pfmat);
 	cout << "C = " << endl;
 	disp(C, 16);
+	C.resize(0, 0);
 	mattload(C, "C", pfmatt);
 	cout << "C = " << endl;
 	disp(C, 16);
@@ -216,11 +271,13 @@ int main()
 	// 3D arrays
 	A3.resize(0, 0, 0);
 	matload(A3, "A3", pfmat);
+	A3.resize(0, 0, 0);
 	mattload(A3, "A3", pfmatt);
 	//TODO design 3d disp
 
 	C3.resize(0, 0, 0);
 	matload(C3, "C3", pfmat);
+	C3.resize(0, 0, 0);
 	mattload(C3, "C3", pfmatt);
 
 	matClose(pfmat);

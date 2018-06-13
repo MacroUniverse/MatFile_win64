@@ -408,11 +408,20 @@ void matsave(Mat3DComplex_I &a, const std::string &varname, MATFile *pfile,
 
 // matload()
 
+void matload(Uchar &i, const string &varname, MATFile *pfile)
+{
+	mxArray *ps;
+	ps = matGetVariable(pfile, varname.c_str());
+	auto pps = (Uchar *)mxGetPr(ps);
+	i = pps[0];
+	mxDestroyArray(ps);
+}
+
 void matload(Int &i, const string &varname, MATFile *pfile)
 {
 	mxArray *ps;
 	ps = matGetVariable(pfile, varname.c_str());
-	auto pps = (Int *)mxGetPr(ps);
+	Int *pps = (Int *)mxGetPr(ps);
 	i = pps[0];
 	mxDestroyArray(ps);
 }
@@ -439,6 +448,19 @@ void matload(Complex &s, const string &varname, MATFile *pfile)
 	mxDestroyArray(ps);
 }
 
+void matload(VecUchar_O &v, const std::string &varname, MATFile *pfile)
+{
+	Int i, n;
+	mxArray *pv;
+	pv = matGetVariable(pfile, varname.c_str());
+	n = (Int)mxGetDimensions(pv)[1];
+	if (v.size() != n) v.resize(n);
+	Uchar *ppv = (Uchar *)mxGetPr(pv);
+	for (i = 0; i < n; ++i)
+		v[i] = ppv[i];
+	mxDestroyArray(pv);
+}
+
 void matload(VecInt_O &v, const std::string &varname, MATFile *pfile)
 {
 	Int i, n;
@@ -446,9 +468,9 @@ void matload(VecInt_O &v, const std::string &varname, MATFile *pfile)
 	pv = matGetVariable(pfile, varname.c_str());
 	n = (Int)mxGetDimensions(pv)[1];
 	if (v.size() != n) v.resize(n);
-	auto ppv = mxGetPr(pv);
+	Int *ppv = (Int *)mxGetPr(pv);
 	for (i = 0; i < n; ++i)
-		v[i] = (Int)round(ppv[i]);
+		v[i] = ppv[i];
 	mxDestroyArray(pv);
 }
 
@@ -483,6 +505,20 @@ void matload(VecComplex_O &v, const string &varname, MATFile *pfile)
 	mxDestroyArray(pv);
 }
 
+void matload(MatUchar_O &a, const std::string &varname, MATFile *pfile)
+{
+	Int i, j, m, n;
+	mxArray *pa = matGetVariable(pfile, varname.c_str());
+	const mwSize *sz = mxGetDimensions(pa);
+	m = (Int)sz[0]; n = (Int)sz[1];
+	a.resize(m, n);
+	Uchar *ppa = (Uchar *)mxGetPr(pa);
+	for (i = 0; i < m; ++i)
+		for (j = 0; j < n; ++j)
+			a[i][j] = ppa[m*j + i];
+	mxDestroyArray(pa);
+}
+
 void matload(MatInt_O &a, const std::string &varname, MATFile *pfile)
 {
 	Int i, j, m, n;
@@ -490,10 +526,10 @@ void matload(MatInt_O &a, const std::string &varname, MATFile *pfile)
 	const mwSize *sz = mxGetDimensions(pa);
 	m = (Int)sz[0]; n = (Int)sz[1];
 	a.resize(m, n);
-	auto ppa = mxGetPr(pa);
+	Int *ppa = (Int *)mxGetPr(pa);
 	for (i = 0; i < m; ++i)
 		for (j = 0; j < n; ++j)
-			a[i][j] = (Int)ppa[m*j + i];
+			a[i][j] = ppa[m*j + i];
 	mxDestroyArray(pa);
 }
 
@@ -1170,6 +1206,22 @@ inline void scanComplex(Complex &c, ifstream &fin)
 	}
 }
 
+void mattload(Uchar &I, const std::string &varname, MATTFile *pfile)
+{
+	Int i, dim, temp;
+	ifstream &fin = pfile->in;
+	i = nameSearch(varname, pfile);
+	fin.seekg(pfile->ind[i]);
+
+	// read var type and dim
+	if (!(pfile->type[i] == 2 || pfile->type[i] == 3) || pfile->size[i].size() != 0) {
+		cout << "\n\n error: wrong type or dim! line: " << __LINE__ << endl;
+		exit(EXIT_FAILURE);
+	}
+	// read var data
+	fin >> temp; I = Uchar(temp);
+}
+
 void mattload(Int &I, const std::string &varname, MATTFile *pfile)
 {
 	Int i, dim;
@@ -1216,6 +1268,26 @@ void mattload(Complex &I, const std::string &varname, MATTFile *pfile)
 	}
 	// read var data
 	scanComplex(I, fin);
+}
+
+void mattload(VecUchar_O &v, const std::string &varname, MATTFile *pfile)
+{
+	Int i, type, dim, n, temp;
+	ifstream &fin = pfile->in;
+	i = nameSearch(varname, pfile);
+	fin.seekg(pfile->ind[i]);
+
+	// read var type and dim
+	type = pfile->type[i]; dim = pfile->size[i].size();
+	if (!(type == 2 || type == 3) || dim != 1) {
+		cout << "\n\n error: wrong type or dim! line: " << __LINE__ << endl;
+		exit(EXIT_FAILURE);
+	}
+	n = pfile->size[i][0]; v.resize(n);
+	// read var data
+	for (i = 0; i < n; ++i) {
+		fin >> temp;  v[i] = (Uchar)temp;
+	}
 }
 
 void mattload(VecInt_O &v, const string &varname, MATTFile *pfile)
@@ -1273,6 +1345,27 @@ void mattload(VecComplex_O &v, const string &varname, MATTFile *pfile)
 	// read var data
 	for (i = 0; i < n; ++i)
 		scanComplex(v[i], fin);
+}
+
+void mattload(MatUchar_O &a, const std::string &varname, MATTFile *pfile)
+{
+	Int i, j, type, dim, m, n, temp;
+	ifstream &fin = pfile->in;
+	i = nameSearch(varname, pfile);
+	fin.seekg(pfile->ind[i]);
+
+	// read var type and dim
+	type = pfile->type[i]; dim = pfile->size[i].size();
+	if (!(type == 2 || type == 3) || dim != 2) {
+		cout << "\n\n error: wrong type or dim! line: " << __LINE__ << endl;
+		exit(EXIT_FAILURE);
+	}
+	m = pfile->size[i][0]; n = pfile->size[i][1]; a.resize(m, n);
+	// read var data
+	for (j = 0; j < n; ++j)
+		for (i = 0; i < m; ++i) {
+			fin >> temp;  a[i][j] = (Uchar)temp;
+		}
 }
 
 void mattload(MatInt_O &a, const string &varname, MATTFile *pfile)
@@ -1395,56 +1488,115 @@ void mat2matt(const string &fmat, const string &fmatt)
 		mxArray *pa = matGetVariable(pfmat, names[i]);
 		ndim = mxGetNumberOfDimensions(pa);
 		const mwSize *sz = mxGetDimensions(pa);
-		if (ndim == 2)
-			if (sz[0] == 1 && sz[1] == 1) {
-				if (mxIsDouble(pa)) {
-
+		if (ndim == 2) {
+			if (sz[0] == 0 || sz[1] == 0) {
+				cout << "\n\nerror: empty variable unsupported!" << __LINE__ << endl;
+				exit(EXIT_FAILURE);
+			}
+			else if (sz[0] == 1 && sz[1] == 1) {
+				// scalar
+				if (mxIsComplex(pa)) {
+					Complex c;
+					matload(c, names[i], pfmat);
+					mattsave(c, names[i], pfmatt);
 				}
-				else if (mxIsComplex(pa)) {
-
+				else if (mxIsDouble(pa)) {
+					Doub s;
+					matload(s, names[i], pfmat);
+					mattsave(s, names[i], pfmatt);
 				}
 				else if (mxIsInt32(pa)) {
-
+					Int s;
+					matload(s, names[i], pfmat);
+					mattsave(s, names[i], pfmatt);
 				}
-				else if (mxIsInt8(pa)) {
-
+				else if (mxIsUint8(pa)) {
+					Uchar ch;
+					matload(ch, names[i], pfmat);
+					mattsave(ch, names[i], pfmatt);
 				}
 				else {
-
+					cout << "\n\nerror: type unsupported!" << __LINE__ << endl;
+					exit(EXIT_FAILURE);
 				}
 			}
-			else if (ndim == 3) {
-				if (mxIsDouble(pa)) {
-
+			else if (sz[0] == 1 || sz[1] == 1) {
+				// save to vector
+				if (mxIsComplex(pa)) {
+					VecComplex v;
+					matload(v, names[i], pfmat);
+					mattsave(v, names[i], pfmatt);
 				}
-				else if (mxIsComplex(pa)) {
-
+				else if (mxIsDouble(pa)) {
+					VecDoub v;
+					matload(v, names[i], pfmat);
+					mattsave(v, names[i], pfmatt);
 				}
 				else if (mxIsInt32(pa)) {
-
+					VecInt v;
+					matload(v, names[i], pfmat);
+					mattsave(v, names[i], pfmatt);
 				}
-				else if (mxIsInt8(pa)) {
-
+				else if (mxIsUint8(pa)) {
+					VecUchar v;
+					matload(v, names[i], pfmat);
+					mattsave(v, names[i], pfmatt);
 				}
 				else {
-
+					cout << "\n\nerror: type unsupported!" << __LINE__ << endl;
+					exit(EXIT_FAILURE);
 				}
+			}
+			else {
+				// save to matrix
+				if (mxIsComplex(pa)) {
+					MatComplex a;
+					matload(a, names[i], pfmat);
+					mattsave(a, names[i], pfmatt);
+				}
+				else if (mxIsDouble(pa)) {
+					MatDoub a;
+					matload(a, names[i], pfmat);
+					mattsave(a, names[i], pfmatt);
+				}
+				else if (mxIsInt32(pa)) {
+					MatInt a;
+					matload(a, names[i], pfmat);
+					mattsave(a, names[i], pfmatt);
+				}
+				else if (mxIsUint8(pa)) {
+					MatUchar a;
+					matload(a, names[i], pfmat);
+					mattsave(a, names[i], pfmatt);
+				}
+				else {
+					cout << "\n\nerror: type unsupported!" << __LINE__ << endl;
+					exit(EXIT_FAILURE);
+				}
+			}
+		}
+		else if (ndim == 3) {
+			// save to matrix
+			if (mxIsComplex(pa)) {
+				Mat3DComplex a3;
+				matload(a3, names[i], pfmat);
+				mattsave(a3, names[i], pfmatt);
+			}
+			else if (mxIsDouble(pa)) {
+				Mat3DDoub a3;
+				matload(a3, names[i], pfmat);
+				mattsave(a3, names[i], pfmatt);
+			}
+			else {
+				cout << "\n\nerror: type unsupported!" << __LINE__ << endl;
+				exit(EXIT_FAILURE);
+			}
 		}
 		else {
-			cout << "\n\n error: unsupported dimension! ";
+			cout << "\n\n error: unsupported dimension! " << __LINE__ << endl;
 			exit(EXIT_FAILURE);
 		}
-
-		/*
-		m = (Int)sz[0]; n = (Int)sz[1];
-		a.resize(m, n);
-		auto ppa = mxGetPr(pa);
-		for (i = 0; i < m; ++i)
-			for (j = 0; j < n; ++j)
-				a[i][j] = (Int)ppa[m*j + i];
-		mxDestroyArray(pa);*/
 	}
-
 	matClose(pfmat);
 	mattClose(pfmatt);
 }

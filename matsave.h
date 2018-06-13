@@ -20,6 +20,7 @@
 #ifndef MATFILE_PRECISION
 #define MATFILE_PRECISION 16
 #endif
+#include <algorithm>
 #include "nr3.h"
 
 #if defined(MATFILE_BINARY) || defined(MATFILE_DUAL)
@@ -98,17 +99,23 @@ void matsave(Mat3DComplex_I &a, const std::string &varname, MATFile *pfile,
 
 // matload()
 
+void matload(Uchar &i, const std::string &varname, MATFile *pfile);
+
 void matload(Int &i, const std::string &varname, MATFile *pfile);
 
 void matload(Doub &s, const std::string &varname, MATFile *pfile);
 
 void matload(Complex &s, const std::string &varname, MATFile *pfile);
 
+void matload(VecUchar_O &v, const std::string &varname, MATFile *pfile);
+
 void matload(VecInt_O &v, const std::string &varname, MATFile *pfile);
 
 void matload(VecDoub_O &v, const std::string &varname, MATFile *pfile);
 
 void matload(VecComplex_O &v, const std::string &varname, MATFile *pfile);
+
+void matload(MatUchar_O &a, const std::string &varname, MATFile *pfile);
 
 void matload(MatInt_O &a, const std::string &varname, MATFile *pfile);
 
@@ -163,17 +170,23 @@ void mattsave(Mat3DComplex_I &a, const std::string &varname, MATTFile *pfile,
 
 // matload()
 
+void mattload(Uchar &i, const std::string &varname, MATTFile *pfile);
+
 void mattload(Int &i, const std::string &varname, MATTFile *pfile);
 
 void mattload(Doub &s, const std::string &varname, MATTFile *pfile);
 
 void mattload(Complex &s, const std::string &varname, MATTFile *pfile);
 
+void mattload(VecUchar_O &v, const std::string &varname, MATTFile *pfile);
+
 void mattload(VecInt_O &v, const std::string &varname, MATTFile *pfile);
 
 void mattload(VecDoub_O &v, const std::string &varname, MATTFile *pfile);
 
 void mattload(VecComplex_O &v, const std::string &varname, MATTFile *pfile);
+
+void mattload(MatUchar_O &a, const std::string &varname, MATTFile *pfile);
 
 void mattload(MatInt_O &a, const std::string &varname, MATTFile *pfile);
 
