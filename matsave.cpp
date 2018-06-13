@@ -2,8 +2,7 @@
 
 using namespace std;
 
-#ifdef MATFILE_BINARY
-
+#if defined(MATFILE_BINARY) || defined(MATFILE_DUAL)
 // matsave()
 
 void matsave(const Uchar s, const std::string &varname, MATFile *pfile)
@@ -413,8 +412,8 @@ void matload(Int &i, const string &varname, MATFile *pfile)
 {
 	mxArray *ps;
 	ps = matGetVariable(pfile, varname.c_str());
-	auto pps = mxGetPr(ps);
-	i = (Int)pps[0];
+	auto pps = (Int *)mxGetPr(ps);
+	i = pps[0];
 	mxDestroyArray(ps);
 }
 
@@ -574,19 +573,23 @@ void matload(Mat3DComplex_O &a, const std::string &varname, MATFile *pfile)
 	mxDestroyArray(pa);
 }
 
-#else /*#ifdef MATFILE_BINARY*/
-// text mode
+#endif
 
-void getnames(MATFile *pfile);
+#ifndef MATFILE_BINARY
+// ==================== MATT functions =================
+
+void getprofile(MATTFile *pfile);
 
 // change extension from ".mat" to
-MATFile *matOpen(std::string fname, const Char *rw)
+MATTFile *mattOpen(std::string fname, const Char *rw)
 {
-	MATFile* pfile = new MATFile;
-	Int N = (Int)fname.size();
-	fname += "t";
+	#ifndef MATFILE_DUAL // TEXT mode
+		fname += "t";
+	#endif
 
+	MATTFile* pfile = new MATTFile;
 	if (rw[0] == 'w') {
+		pfile->rw = 'w';
 		pfile->n = 0;
 		pfile->out = ofstream(fname);
 		#ifdef MATFILE_PRECISION
@@ -594,29 +597,35 @@ MATFile *matOpen(std::string fname, const Char *rw)
 		#endif
 	}
 	else {
+		pfile->rw = 'r';
 		pfile->in = ifstream(fname);
 		#ifdef MATFILE_PRECISION
 			pfile->in.precision(MATFILE_PRECISION);
 		#endif
-		getnames(pfile); // get var names
+		getprofile(pfile); // get var names
 	}
 	return pfile;
 }
 
-void matClose(MATFile* pfile)
+void mattClose(MATTFile* pfile)
 {
 	Int i;
-	ofstream &fout = pfile->out;
-	// write position of variables
-	for (i = pfile->ind.size() - 1; i >= 0; --i)
-		fout << pfile->ind[i] << "\n";
-	// write number of variables
-	fout << pfile->n;
-	pfile->out.close();
+	if (pfile->rw == 'w') {
+		ofstream &fout = pfile->out;
+		// write position of variables
+		for (i = pfile->ind.size() - 1; i >= 0; --i)
+			fout << pfile->ind[i] << "\n";
+		// write number of variables
+		fout << pfile->n;
+		pfile->out.close();
+	}
+	else {
+		pfile->in.close();
+	}
 	delete pfile;
 }
 
-void matsave(const Uchar s, const std::string &varname, MATFile *pfile)
+void mattsave(const Uchar s, const std::string &varname, MATTFile *pfile)
 {
 	Int i, n;
 	ofstream &fout = pfile->out;
@@ -635,7 +644,7 @@ void matsave(const Uchar s, const std::string &varname, MATFile *pfile)
 	fout << (Int)s << '\n';
 }
 
-void matsave(const Int s, const std::string &varname, MATFile *pfile)
+void mattsave(const Int s, const std::string &varname, MATTFile *pfile)
 {
 	Int i, n;
 	ofstream &fout = pfile->out;
@@ -654,7 +663,7 @@ void matsave(const Int s, const std::string &varname, MATFile *pfile)
 	fout << s << '\n';
 }
 
-void matsave(const Doub s, const std::string &varname, MATFile *pfile)
+void mattsave(const Doub s, const std::string &varname, MATTFile *pfile)
 {
 	Int i, n;
 	ofstream &fout = pfile->out;
@@ -673,7 +682,7 @@ void matsave(const Doub s, const std::string &varname, MATFile *pfile)
 	fout << s << '\n';
 }
 
-void matsave(const Complex s, const std::string &varname, MATFile *pfile)
+void mattsave(const Complex s, const std::string &varname, MATTFile *pfile)
 {
 	Int i, n;
 	ofstream &fout = pfile->out;
@@ -695,7 +704,7 @@ void matsave(const Complex s, const std::string &varname, MATFile *pfile)
 		fout << real(s) << '+' << imag(s) << "i\n";
 }
 
-void matsave(VecUchar_I &v, const std::string &varname, MATFile *pfile)
+void mattsave(VecUchar_I &v, const std::string &varname, MATTFile *pfile)
 {
 	Int i, n;
 	ofstream &fout = pfile->out;
@@ -717,7 +726,7 @@ void matsave(VecUchar_I &v, const std::string &varname, MATFile *pfile)
 	}
 }
 
-void matsave(VecInt_I &v, const std::string &varname, MATFile *pfile)
+void mattsave(VecInt_I &v, const std::string &varname, MATTFile *pfile)
 {
 	Int i, n;
 	ofstream &fout = pfile->out;
@@ -739,7 +748,7 @@ void matsave(VecInt_I &v, const std::string &varname, MATFile *pfile)
 	}
 }
 
-void matsave(VecDoub_I &v, const std::string &varname, MATFile *pfile)
+void mattsave(VecDoub_I &v, const std::string &varname, MATTFile *pfile)
 {
 	Int i, n;
 	ofstream &fout = pfile->out;
@@ -761,7 +770,7 @@ void matsave(VecDoub_I &v, const std::string &varname, MATFile *pfile)
 	}
 }
 
-void matsave(VecComplex_I &v, const std::string &varname, MATFile *pfile)
+void mattsave(VecComplex_I &v, const std::string &varname, MATTFile *pfile)
 {
 	Int i, n;
 	Doub cr, ci;
@@ -788,7 +797,7 @@ void matsave(VecComplex_I &v, const std::string &varname, MATFile *pfile)
 	}
 }
 
-void matsave(MatUchar_I &a, const string &varname, MATFile *pfile,
+void mattsave(MatUchar_I &a, const string &varname, MATTFile *pfile,
 	const Int step1, const Int step2)
 {
 	Int i, j, m, n;
@@ -812,7 +821,7 @@ void matsave(MatUchar_I &a, const string &varname, MATFile *pfile,
 		}
 }
 
-void matsave(MatInt_I &a, const string &varname, MATFile *pfile,
+void mattsave(MatInt_I &a, const string &varname, MATTFile *pfile,
 	const Int step1, const Int step2)
 {
 	Int i, j, m, n;
@@ -836,7 +845,7 @@ void matsave(MatInt_I &a, const string &varname, MATFile *pfile,
 		}
 }
 
-void matsave(MatDoub_I &a, const string &varname, MATFile *pfile,
+void mattsave(MatDoub_I &a, const string &varname, MATTFile *pfile,
 	const Int step1, const Int step2)
 {
 	Int i, j, m, n;
@@ -860,7 +869,7 @@ void matsave(MatDoub_I &a, const string &varname, MATFile *pfile,
 		}
 }
 
-void matsave(MatComplex_I &a, const string &varname, MATFile *pfile,
+void mattsave(MatComplex_I &a, const string &varname, MATTFile *pfile,
 	const Int step1, const Int step2)
 {
 	Int i, j, m, n;
@@ -889,7 +898,7 @@ void matsave(MatComplex_I &a, const string &varname, MATFile *pfile,
 		}
 }
 
-void matsave(Mat3DDoub_I &a, const std::string &varname, MATFile *pfile,
+void mattsave(Mat3DDoub_I &a, const std::string &varname, MATTFile *pfile,
 	const Int step1, const Int step2, const Int step3)
 {
 	Int i, j, k, m, n, q;
@@ -918,7 +927,7 @@ void matsave(Mat3DDoub_I &a, const std::string &varname, MATFile *pfile,
 if xyz = 'x', step1 is in y direction, step2 is in z direction, save pa[iy][iz][ix].
 if xyz = 'y', step1 is in z direction, step2 is in x direction, save pa[iz][ix][iy].
 if xyz = 'z', step1 is in x direction, step2 is in y direction, save pa[ix][iy][iz]. */
-void matsave(Mat3DDoub_I &a, const std::string &varname, MATFile *pfile,
+void mattsave(Mat3DDoub_I &a, const std::string &varname, MATTFile *pfile,
 	const Char xyz, VecInt_I &slice, const Int step1, const Int step2)
 {
 	Int i, j, k, m, n, ind, Nslice{ slice.size() };
@@ -973,7 +982,7 @@ void matsave(Mat3DDoub_I &a, const std::string &varname, MATFile *pfile,
 	}
 }
 
-void matsave(Mat3DComplex_I &a, const std::string &varname, MATFile *pfile,
+void mattsave(Mat3DComplex_I &a, const std::string &varname, MATTFile *pfile,
 	const Int step1, const Int step2, const Int step3)
 {
 	Int i, j, k, m, n, q;
@@ -1008,7 +1017,7 @@ void matsave(Mat3DComplex_I &a, const std::string &varname, MATFile *pfile,
 if xyz = 'x', step1 is in y direction, step2 is in z direction, save pa[iy][iz][ix].
 if xyz = 'y', step1 is in z direction, step2 is in x direction, save pa[iz][ix][iy].
 if xyz = 'z', step1 is in x direction, step2 is in y direction, save pa[ix][iy][iz]. */
-void matsave(Mat3DComplex_I &a, const std::string &varname, MATFile *pfile,
+void mattsave(Mat3DComplex_I &a, const std::string &varname, MATTFile *pfile,
 	const Char xyz, VecInt_I &slice, const Int step1, const Int step2)
 {
 	Int i, j, k, m, n, ind, Nslice{ slice.size() };
@@ -1101,11 +1110,12 @@ Int scanInverse(ifstream &fin)
 }
 
 // get var names and positions from the end of the file
-// pfile->ind[i] points to the variable type number;
-void getnames(MATFile *pfile)
+// pfile->ind[i] points to the first matrix element;
+void getprofile(MATTFile *pfile)
 {
 	Int j, n, temp;
 	size_t i, numel;
+	vector<Int> size;
 	string name;
 	ifstream &fin = pfile->in;
 
@@ -1123,25 +1133,44 @@ void getnames(MATFile *pfile)
 		for (j = 0; j < n; ++j) {
 			fin >> temp; name.push_back((char)temp);
 		}
-		pfile->names.push_back(name);
+		pfile->name.push_back(name);
+		fin >> temp; pfile->type.push_back(temp);
+		fin >> n;
+		size.resize(0);
+		for (j = 0; j < n; ++j) {
+			fin >> temp; size.push_back(temp);
+		}
+		pfile->size.push_back(size);
 		pfile->ind[i] = fin.tellg();
 	}
 }
 
 // search variable in file by name
-inline Int nameSearch(const string &name, MATFile *pfile)
+inline Int nameSearch(const string &name, MATTFile *pfile)
 {
 	for (Int i = 0; i < pfile->n; ++i)
-		if (name == pfile->names[i])
+		if (name == pfile->name[i])
 			return i;
+	cout << "\n\n error:variable name not found! line: " << __LINE__ << endl;
+	return -1; // did not fine
 }
 
-inline Int getDim(ifstream &fin)
+inline void scanComplex(Complex &c, ifstream &fin)
 {
-	
+	Doub cr = 0, ci = 0;
+	Uchar ch;
+	fin >> cr;
+	ch = fin.get();
+	if (ch != '+')
+		c = cr;
+	else {
+		fin >> ci;
+		c = Complex(cr, ci);
+		fin.ignore(100, '\n');
+	}
 }
 
-void matload(Int &I, const std::string &varname, MATFile *pfile)
+void mattload(Int &I, const std::string &varname, MATTFile *pfile)
 {
 	Int i, dim;
 	ifstream &fin = pfile->in;
@@ -1149,8 +1178,7 @@ void matload(Int &I, const std::string &varname, MATFile *pfile)
 	fin.seekg(pfile->ind[i]);
 	
 	// read var type and dim
-	fin >> i; fin >> dim;
-	if ((i != 2 && i != 3) || dim != 0) {
+	if (!(pfile->type[i] == 2 || pfile->type[i] == 3) || pfile->size[i].size() != 0) {
 		cout << "\n\n error: wrong type or dim! line: " << __LINE__ << endl;
 		exit(EXIT_FAILURE);
 	}
@@ -1158,39 +1186,271 @@ void matload(Int &I, const std::string &varname, MATFile *pfile)
 	fin >> I;
 }
 
-void matload(VecDoub_O &v, const string &varname, MATFile *pfile)
+void mattload(Doub &I, const std::string &varname, MATTFile *pfile)
 {
-	Int i, dim, n;
+	Int i, dim;
 	ifstream &fin = pfile->in;
 	i = nameSearch(varname, pfile);
 	fin.seekg(pfile->ind[i]);
 
 	// read var type and dim
-	fin >> i; fin >> dim;
-	if (i != 0 || dim != 1) {
+	if (pfile->type[i] != 0 || pfile->size[i].size() != 0) {
 		cout << "\n\n error: wrong type or dim! line: " << __LINE__ << endl;
 		exit(EXIT_FAILURE);
 	}
-	fin >> n; v.resize(n);
+	// read var data
+	fin >> I;
+}
+
+void mattload(Complex &I, const std::string &varname, MATTFile *pfile)
+{
+	Int i, dim;
+	ifstream &fin = pfile->in;
+	i = nameSearch(varname, pfile);
+	fin.seekg(pfile->ind[i]);
+
+	// read var type and dim
+	if (pfile->type[i] != 1 || pfile->size[i].size() != 0) {
+		cout << "\n\n error: wrong type or dim! line: " << __LINE__ << endl;
+		exit(EXIT_FAILURE);
+	}
+	// read var data
+	scanComplex(I, fin);
+}
+
+void mattload(VecInt_O &v, const string &varname, MATTFile *pfile)
+{
+	Int i, type, dim, n;
+	ifstream &fin = pfile->in;
+	i = nameSearch(varname, pfile);
+	fin.seekg(pfile->ind[i]);
+
+	// read var type and dim
+	type = pfile->type[i]; dim = pfile->size[i].size();
+	if ( !(type == 2 || type == 3) || dim != 1) {
+		cout << "\n\n error: wrong type or dim! line: " << __LINE__ << endl;
+		exit(EXIT_FAILURE);
+	}
+	n = pfile->size[i][0]; v.resize(n);
 	// read var data
 	for (i = 0; i < n; ++i)
 		fin >> v[i];
 }
 
-// how to write matread() functions in c++
-//ifstream fin("test.matt");
-//Doub cr = 0, ci = 0, d3 = 0, d4 = 0;
-//Uchar suchar;
-//fin >> cr;
-//suchar = fin.get();
-//fin >> ci;
-//suchar = fin.get();
-//suchar = fin.get();
-//fin >> d3;
-//fin >> suchar;
-//fin >> d4;
-//fin >> suchar;
-//fin.ignore(1000, '\n');
-//fin.close();
+void mattload(VecDoub_O &v, const string &varname, MATTFile *pfile)
+{
+	Int i, type, dim, n;
+	ifstream &fin = pfile->in;
+	i = nameSearch(varname, pfile);
+	fin.seekg(pfile->ind[i]);
 
-#endif /*#ifdef MATFILE_BINARY*/
+	// read var type and dim
+	type = pfile->type[i]; dim = pfile->size[i].size();
+	if (type != 0 || dim != 1) {
+		cout << "\n\n error: wrong type or dim! line: " << __LINE__ << endl;
+		exit(EXIT_FAILURE);
+	}
+	n = pfile->size[i][0]; v.resize(n);
+	// read var data
+	for (i = 0; i < n; ++i)
+		fin >> v[i];
+}
+
+void mattload(VecComplex_O &v, const string &varname, MATTFile *pfile)
+{
+	Int i, type, dim, n;
+	ifstream &fin = pfile->in;
+	i = nameSearch(varname, pfile);
+	fin.seekg(pfile->ind[i]);
+
+	// read var type and dim
+	type = pfile->type[i]; dim = pfile->size[i].size();
+	if (type != 1 || dim != 1) {
+		cout << "\n\n error: wrong type or dim! line: " << __LINE__ << endl;
+		exit(EXIT_FAILURE);
+	}
+	n = pfile->size[i][0]; v.resize(n);
+	// read var data
+	for (i = 0; i < n; ++i)
+		scanComplex(v[i], fin);
+}
+
+void mattload(MatInt_O &a, const string &varname, MATTFile *pfile)
+{
+	Int i, j, type, dim, m, n;
+	ifstream &fin = pfile->in;
+	i = nameSearch(varname, pfile);
+	fin.seekg(pfile->ind[i]);
+
+	// read var type and dim
+	type = pfile->type[i]; dim = pfile->size[i].size();
+	if ( !(type == 2 || type == 3) || dim != 2) {
+		cout << "\n\n error: wrong type or dim! line: " << __LINE__ << endl;
+		exit(EXIT_FAILURE);
+	}
+	m = pfile->size[i][0]; n = pfile->size[i][1]; a.resize(m, n);
+	// read var data
+	for (j = 0; j < n; ++j)
+		for (i = 0; i < m; ++i)
+			fin >> a[i][j];
+}
+
+void mattload(MatDoub_O &a, const string &varname, MATTFile *pfile)
+{
+	Int i, j, type, dim, m, n;
+	ifstream &fin = pfile->in;
+	i = nameSearch(varname, pfile);
+	fin.seekg(pfile->ind[i]);
+
+	// read var type and dim
+	type = pfile->type[i]; dim = pfile->size[i].size();
+	if (type != 0 || dim != 2) {
+		cout << "\n\n error: wrong type or dim! line: " << __LINE__ << endl;
+		exit(EXIT_FAILURE);
+	}
+	m = pfile->size[i][0]; n = pfile->size[i][1]; a.resize(m, n);
+	// read var data
+	for (j = 0; j < n; ++j)
+		for (i = 0; i < m; ++i)
+			fin >> a[i][j];
+}
+
+void mattload(MatComplex_O &a, const string &varname, MATTFile *pfile)
+{
+	Int i, j, type, dim, m, n;
+	ifstream &fin = pfile->in;
+	i = nameSearch(varname, pfile);
+	fin.seekg(pfile->ind[i]);
+
+	// read var type and dim
+	type = pfile->type[i]; dim = pfile->size[i].size();
+	if ( !(type == 1 || type == 0) || dim != 2) {
+		cout << "\n\n error: wrong type or dim! line: " << __LINE__ << endl;
+		exit(EXIT_FAILURE);
+	}
+	m = pfile->size[i][0]; n = pfile->size[i][1]; a.resize(m, n);
+	// read var data
+	for (j = 0; j < n; ++j)
+		for (i = 0; i < m; ++i)
+			scanComplex(a[i][j], fin);
+}
+
+void mattload(Mat3DDoub_O &a, const std::string &varname, MATTFile *pfile)
+{
+	Int i, j, k, type, dim, m, n, q;
+	ifstream &fin = pfile->in;
+	i = nameSearch(varname, pfile);
+	fin.seekg(pfile->ind[i]);
+
+	// read var type and dim
+	type = pfile->type[i]; dim = pfile->size[i].size();
+	if (type != 0 || dim != 3) {
+		cout << "\n\n error: wrong type or dim! line: " << __LINE__ << endl;
+		exit(EXIT_FAILURE);
+	}
+	m = pfile->size[i][0]; n = pfile->size[i][1]; q = pfile->size[i][2];
+	a.resize(m, n, q);
+	// read var data
+	for (k = 0; k < q; ++k)
+		for (j = 0; j < n; ++j)
+			for (i = 0; i < m; ++i)
+				fin >> a[i][j][k];
+}
+
+void mattload(Mat3DComplex_O &a, const std::string &varname, MATTFile *pfile)
+{
+	Int i, j, k, type, dim, m, n, q;
+	ifstream &fin = pfile->in;
+	i = nameSearch(varname, pfile);
+	fin.seekg(pfile->ind[i]);
+
+	// read var type and dim
+	type = pfile->type[i]; dim = pfile->size[i].size();
+	if (!(type == 1 || type == 0) || dim != 3) {
+		cout << "\n\n error: wrong type or dim! line: " << __LINE__ << endl;
+		exit(EXIT_FAILURE);
+	}
+	m = pfile->size[i][0]; n = pfile->size[i][1]; q = pfile->size[i][2];
+	a.resize(m, n, q);
+	// read var data
+	for (k = 0; k < q; ++k)
+		for (j = 0; j < n; ++j)
+			for (i = 0; i < m; ++i)
+				scanComplex(a[i][j][k], fin);
+}
+
+#endif
+
+#ifdef MATFILE_DUAL
+void mat2matt(const string &fmat, const string &fmatt)
+{
+	Int i, m, n, q, ndim;
+	char **names;
+	MATFile *pfmat = matOpen(fmat.c_str(), "r");
+	MATTFile *pfmatt = mattOpen(fmatt, "w");
+	
+	// get number of variables n and names
+	names = matGetDir(pfmat, &n);
+	for (i = 0; i < n; ++i){
+		mxArray *pa = matGetVariable(pfmat, names[i]);
+		ndim = mxGetNumberOfDimensions(pa);
+		const mwSize *sz = mxGetDimensions(pa);
+		if (ndim == 2)
+			if (sz[0] == 1 && sz[1] == 1) {
+				if (mxIsDouble(pa)) {
+
+				}
+				else if (mxIsComplex(pa)) {
+
+				}
+				else if (mxIsInt32(pa)) {
+
+				}
+				else if (mxIsInt8(pa)) {
+
+				}
+				else {
+
+				}
+			}
+			else if (ndim == 3) {
+				if (mxIsDouble(pa)) {
+
+				}
+				else if (mxIsComplex(pa)) {
+
+				}
+				else if (mxIsInt32(pa)) {
+
+				}
+				else if (mxIsInt8(pa)) {
+
+				}
+				else {
+
+				}
+		}
+		else {
+			cout << "\n\n error: unsupported dimension! ";
+			exit(EXIT_FAILURE);
+		}
+
+		/*
+		m = (Int)sz[0]; n = (Int)sz[1];
+		a.resize(m, n);
+		auto ppa = mxGetPr(pa);
+		for (i = 0; i < m; ++i)
+			for (j = 0; j < n; ++j)
+				a[i][j] = (Int)ppa[m*j + i];
+		mxDestroyArray(pa);*/
+	}
+
+	matClose(pfmat);
+	mattClose(pfmatt);
+}
+
+void matt2mat(const string &fmatt, const string &fmat)
+{
+
+}
+#endif
