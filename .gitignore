@@ -5,7 +5,6 @@ x64/
 mattest/Debug/
 mattest/Release/
 mattest/x64/
-*.txt
 *.mat
 
 *.matt

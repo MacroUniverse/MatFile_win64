@@ -54,7 +54,7 @@ int main()
 	matsave(s, "s", pfmat);
 	mattsave(s, "s", pfmatt);
 
-	Complex sc(3.1, 3.2);
+	Complex sc(3.1, -3.2);
 	matsave(sc, "sc", pfmat);
 	mattsave(sc, "sc", pfmatt);
 
@@ -73,7 +73,7 @@ int main()
 	mattsave(v, "v", pfmatt);
 	VecComplex vc(3);
 	for (Int i = 0; i < 3; ++i)
-		vc[i] = 1 + (Doub)i + I * (Doub)i;
+		vc[i] = 1 + (Doub)i - I * (Doub)i;
 	matsave(vc, "vc", pfmat);
 	mattsave(vc, "vc", pfmatt);
 
