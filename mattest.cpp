@@ -195,18 +195,15 @@ int main()
 	mattload(v8, "v8", pfmatt);
 	cout << "v8 = " << endl;
 	disp(v8, 16);
-	// TODO: disp(v8, 16);
 
 	vi.resize(0);
 	matload(vi, "vi", pfmat);
 	cout << "vi = " << endl;
 	disp(vi, 16);
-	// TODO: disp(vi, 16);
 	vi.resize(0);
 	mattload(vi, "vi", pfmatt);
 	cout << "vi = " << endl;
 	disp(vi, 16);
-	// TODO: disp(vi, 16);
 
 	v.resize(0);
 	matload(v, "v", pfmat);
@@ -266,14 +263,21 @@ int main()
 	// 3D arrays
 	A3.resize(0, 0, 0);
 	matload(A3, "A3", pfmat);
+	cout << "A3 = " << endl;
+	disp(A3, 16);
 	A3.resize(0, 0, 0);
 	mattload(A3, "A3", pfmatt);
-	//TODO design 3d disp
+	cout << "A3 = " << endl;
+	disp(A3, 16);
 
 	C3.resize(0, 0, 0);
 	matload(C3, "C3", pfmat);
+	cout << "C3 = " << endl;
+	disp(C3, 16);
 	C3.resize(0, 0, 0);
 	mattload(C3, "C3", pfmatt);
+	cout << "C3 = " << endl;
+	disp(C3, 16);
 
 	matClose(pfmat);
 	mattClose(pfmatt);
