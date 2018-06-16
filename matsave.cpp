@@ -673,6 +673,8 @@ void getprofile(MATTFile *pfile)
 
 MATTFile *mattOpen(string fname, const Char *rw)
 {
+	// must open file in binary mode, otherwise, '\n' will be written as "\r\n"
+	// and seekg() will not work the same in linux.
 	#ifndef MATFILE_DUAL // TEXT mode
 		fname += "t";
 	#endif
@@ -681,14 +683,18 @@ MATTFile *mattOpen(string fname, const Char *rw)
 	if (rw[0] == 'w') {
 		pfile->rw = 'w';
 		pfile->n = 0;
-		pfile->out = ofstream(fname);
+		pfile->out = ofstream(fname, ios_base::binary);
 		#ifdef MATFILE_PRECISION
 			pfile->out.precision(MATFILE_PRECISION);
 		#endif
 	}
 	else {
 		pfile->rw = 'r';
-		pfile->in = ifstream(fname);
+		pfile->in = ifstream(fname, ios_base::binary);
+		if (!pfile->in) {
+			cout << "error: file not found: " << fname << endl;
+			exit(EXIT_FAILURE);
+		}
 		#ifdef MATFILE_PRECISION
 			pfile->in.precision(MATFILE_PRECISION);
 		#endif

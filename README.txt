@@ -44,3 +44,5 @@ Save 3D slices:
 if xyz = 'x', step1 is in y direction, step2 is in z direction, save pa[iy][iz][ix].
 if xyz = 'y', step1 is in z direction, step2 is in x direction, save pa[iz][ix][iy].
 if xyz = 'z', step1 is in x direction, step2 is in y direction, save pa[ix][iy][iz]. */
+
+mattOpen() will check file existence, but matOpen() will not!
