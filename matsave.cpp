@@ -695,9 +695,7 @@ MATTFile *mattOpen(string fname, const Char *rw)
 			cout << "error: file not found: " << fname << endl;
 			exit(EXIT_FAILURE);
 		}
-		#ifdef MATFILE_PRECISION
-			pfile->in.precision(MATFILE_PRECISION);
-		#endif
+		pfile->in.precision(17);
 		getprofile(pfile); // get var names
 	}
 	return pfile;

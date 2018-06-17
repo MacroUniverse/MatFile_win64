@@ -11,7 +11,7 @@ int main()
 {
 	
 	// TODO: write 2 conversion functions for any file
-	//mat2matt()
+	//mat2matt("waveInit.mat", "waveInit.matt");
 	//matt2mat()
 
 	// convert waveInit.mat
@@ -40,6 +40,7 @@ int main()
 	mattsave(Psi, "Psi", pmattfile);
 	mattClose(pmattfile);*/
 	
+	cout.precision(17);
 	MATFile *pfmat = matOpen("nr.mat", "w");
 	MATTFile *pfmatt = mattOpen("nr.matt", "w");
 
@@ -174,9 +175,9 @@ int main()
 	cout << "si = " << si << '\n' << endl;
 
 	s = 0.;
-	cout.precision(16);
 	matload(s, "s", pfmat);
 	cout << "s = " << s << '\n' << endl;
+	s = 0;
 	mattload(s, "s", pfmatt);
 	cout << "s = " << s << '\n' << endl;
 
