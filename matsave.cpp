@@ -640,7 +640,7 @@ Int scanInverse(ifstream &fin)
 void getprofile(MATTFile *pfile)
 {
 	Int j, n, temp;
-	size_t i, numel;
+	size_t i;
 	vector<Int> size;
 	string name;
 	ifstream &fin = pfile->in;
@@ -707,7 +707,7 @@ void mattClose(MATTFile* pfile)
 	if (pfile->rw == 'w') {
 		ofstream &fout = pfile->out;
 		// write position of variables
-		for (i = pfile->ind.size() - 1; i >= 0; --i)
+		for (i = (Int)pfile->ind.size() - 1; i >= 0; --i)
 			fout << pfile->ind[i] << "\n";
 		// write number of variables
 		fout << pfile->n;
@@ -1218,7 +1218,7 @@ inline void scanComplex(Complex &c, ifstream &fin)
 
 void mattload(Uchar &I, const string &varname, MATTFile *pfile)
 {
-	Int i, dim, temp;
+	Int i, temp;
 	ifstream &fin = pfile->in;
 	i = nameSearch(varname, pfile);
 	fin.seekg(pfile->ind[i]);
@@ -1234,7 +1234,7 @@ void mattload(Uchar &I, const string &varname, MATTFile *pfile)
 
 void mattload(Int &I, const string &varname, MATTFile *pfile)
 {
-	Int i, dim;
+	Int i;
 	ifstream &fin = pfile->in;
 	i = nameSearch(varname, pfile);
 	fin.seekg(pfile->ind[i]);
@@ -1250,7 +1250,7 @@ void mattload(Int &I, const string &varname, MATTFile *pfile)
 
 void mattload(Doub &I, const string &varname, MATTFile *pfile)
 {
-	Int i, dim;
+	Int i;
 	ifstream &fin = pfile->in;
 	i = nameSearch(varname, pfile);
 	fin.seekg(pfile->ind[i]);
@@ -1266,7 +1266,7 @@ void mattload(Doub &I, const string &varname, MATTFile *pfile)
 
 void mattload(Complex &I, const string &varname, MATTFile *pfile)
 {
-	Int i, dim;
+	Int i;
 	ifstream &fin = pfile->in;
 	i = nameSearch(varname, pfile);
 	fin.seekg(pfile->ind[i]);
@@ -1282,13 +1282,13 @@ void mattload(Complex &I, const string &varname, MATTFile *pfile)
 
 void mattload(VecUchar_O &v, const string &varname, MATTFile *pfile)
 {
-	Int i, type, dim, n, temp;
+	Int i, dim, n, temp;
 	ifstream &fin = pfile->in;
 	i = nameSearch(varname, pfile);
 	fin.seekg(pfile->ind[i]);
 
 	// read var type and dim
-	dim = pfile->size[i].size();
+	dim = (Int)pfile->size[i].size();
 	if (pfile->type[i] != 3 || dim != 1) {
 		cout << "\n\n error: wrong type or dim! line: " << __LINE__ << endl;
 		exit(EXIT_FAILURE);
@@ -1308,7 +1308,7 @@ void mattload(VecInt_O &v, const string &varname, MATTFile *pfile)
 	fin.seekg(pfile->ind[i]);
 
 	// read var type and dim
-	dim = pfile->size[i].size();
+	dim = (Int)pfile->size[i].size();
 	if (pfile->type[i] < 2 || dim != 1) {
 		cout << "\n\n error: wrong type or dim! line: " << __LINE__ << endl;
 		exit(EXIT_FAILURE);
@@ -1327,7 +1327,7 @@ void mattload(VecDoub_O &v, const string &varname, MATTFile *pfile)
 	fin.seekg(pfile->ind[i]);
 
 	// read var type and dim
-	dim = pfile->size[i].size();
+	dim = (Int)pfile->size[i].size();
 	if (pfile->type[i] == 1 || dim != 1) {
 		cout << "\n\n error: wrong type or dim! line: " << __LINE__ << endl;
 		exit(EXIT_FAILURE);
@@ -1346,7 +1346,7 @@ void mattload(VecComplex_O &v, const string &varname, MATTFile *pfile)
 	fin.seekg(pfile->ind[i]);
 
 	// read var type and dim
-	dim = pfile->size[i].size();
+	dim = (Int)pfile->size[i].size();
 	if (dim != 1) {
 		cout << "\n\n error: wrong type or dim! line: " << __LINE__ << endl;
 		exit(EXIT_FAILURE);
@@ -1365,7 +1365,7 @@ void mattload(MatUchar_O &a, const string &varname, MATTFile *pfile)
 	fin.seekg(pfile->ind[i]);
 
 	// read var type and dim
-	dim = pfile->size[i].size();
+	dim = (Int)pfile->size[i].size();
 	if (pfile->type[i] != 3 || dim != 2) {
 		cout << "\n\n error: wrong type or dim! line: " << __LINE__ << endl;
 		exit(EXIT_FAILURE);
@@ -1386,7 +1386,7 @@ void mattload(MatInt_O &a, const string &varname, MATTFile *pfile)
 	fin.seekg(pfile->ind[i]);
 
 	// read var type and dim
-	dim = pfile->size[i].size();
+	dim = (Int)pfile->size[i].size();
 	if (pfile->type[i] < 2 || dim != 2) {
 		cout << "\n\n error: wrong type or dim! line: " << __LINE__ << endl;
 		exit(EXIT_FAILURE);
@@ -1406,7 +1406,7 @@ void mattload(MatDoub_O &a, const string &varname, MATTFile *pfile)
 	fin.seekg(pfile->ind[i]);
 
 	// read var type and dim
-	dim = pfile->size[i].size();
+	dim = (Int)pfile->size[i].size();
 	if (pfile->type[i] == 1 || dim != 2) {
 		cout << "\n\n error: wrong type or dim! line: " << __LINE__ << endl;
 		exit(EXIT_FAILURE);
@@ -1426,7 +1426,7 @@ void mattload(MatComplex_O &a, const string &varname, MATTFile *pfile)
 	fin.seekg(pfile->ind[i]);
 
 	// read var type and dim
-	dim = pfile->size[i].size();
+	dim = (Int)pfile->size[i].size();
 	if (dim != 2) {
 		cout << "\n\n error: wrong type or dim! line: " << __LINE__ << endl;
 		exit(EXIT_FAILURE);
@@ -1446,7 +1446,7 @@ void mattload(Mat3DDoub_O &a, const string &varname, MATTFile *pfile)
 	fin.seekg(pfile->ind[i]);
 
 	// read var type and dim
-	dim = pfile->size[i].size();
+	dim = (Int)pfile->size[i].size();
 	if (pfile->type[i] == 1 || dim != 3) {
 		cout << "\n\n error: wrong type or dim! line: " << __LINE__ << endl;
 		exit(EXIT_FAILURE);
@@ -1468,7 +1468,7 @@ void mattload(Mat3DComplex_O &a, const string &varname, MATTFile *pfile)
 	fin.seekg(pfile->ind[i]);
 
 	// read var type and dim
-	dim = pfile->size[i].size();
+	dim = (Int)pfile->size[i].size();
 	if (dim != 3) {
 		cout << "\n\n error: wrong type or dim! line: " << __LINE__ << endl;
 		exit(EXIT_FAILURE);
@@ -1487,7 +1487,7 @@ void mattload(Mat3DComplex_O &a, const string &varname, MATTFile *pfile)
 #ifdef MATFILE_DUAL
 void mat2matt(const string &fmat, const string &fmatt)
 {
-	Int i, m, n, q, ndim;
+	Int i, n, ndim;
 	char **names;
 	MATFile *pfmat = matOpen(fmat.c_str(), "r");
 	MATTFile *pfmatt = mattOpen(fmatt, "w");
@@ -1496,7 +1496,7 @@ void mat2matt(const string &fmat, const string &fmatt)
 	names = matGetDir(pfmat, &n);
 	for (i = 0; i < n; ++i){
 		mxArray *pa = matGetVariable(pfmat, names[i]);
-		ndim = mxGetNumberOfDimensions(pa);
+		ndim = (Int)mxGetNumberOfDimensions(pa);
 		const mwSize *sz = mxGetDimensions(pa);
 		if (ndim == 2) {
 			if (sz[0] == 0 || sz[1] == 0) {
