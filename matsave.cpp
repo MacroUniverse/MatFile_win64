@@ -24,7 +24,7 @@ void matsave(Int_I s, const string &varname, MATFile *pfile)
 	mxDestroyArray(ps);
 }
 
-void matsave(const Doub s, const string &varname, MATFile *pfile)
+void matsave(Doub_I s, const string &varname, MATFile *pfile)
 {
 	mxArray *ps;
 	ps = mxCreateDoubleMatrix(1, 1, mxREAL);
@@ -34,7 +34,7 @@ void matsave(const Doub s, const string &varname, MATFile *pfile)
 	mxDestroyArray(ps);
 }
 
-void matsave(const Comp s, const string &varname, MATFile *pfile)
+void matsave(Comp_I s, const string &varname, MATFile *pfile)
 {
 	mxArray *pa;
 	pa = mxCreateDoubleMatrix(1, 1, mxCOMPLEX);
@@ -712,7 +712,7 @@ void mattsave(Int_I s, const string &varname, MATTFile *pfile)
 	fout << s << '\n';
 }
 
-void mattsave(const Doub s, const string &varname, MATTFile *pfile)
+void mattsave(Domp_I s, const string &varname, MATTFile *pfile)
 {
 	Long i, n;
 	ofstream &fout = pfile->out;
@@ -731,7 +731,7 @@ void mattsave(const Doub s, const string &varname, MATTFile *pfile)
 	fout << s << '\n';
 }
 
-void mattsave(const Comp s, const string &varname, MATTFile *pfile)
+void mattsave(Comp_I s, const string &varname, MATTFile *pfile)
 {
 	Long i, n;
 	ofstream &fout = pfile->out;
