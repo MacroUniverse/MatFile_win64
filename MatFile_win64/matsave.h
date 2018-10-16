@@ -10,7 +10,7 @@
 #define MATFILE_PRECISION 16
 #endif
 
-#include "SLISC/arithmatic.h"
+#include "../SLISC/arithmatic.h"
 
 #if defined(MATFILE_BINARY) || defined(MATFILE_DUAL)
 #include "mat.h"
