@@ -1,10 +1,203 @@
-#include "matsave.h"
+// save vectors and matrices defined in "nr3.h" to ".mat" or ".matt" files.
+// see README.txt for details
+// class types: Doub=0, Comp=1, Int=2, Uchar=3.
 
-using namespace std;
+#pragma once
+//#define MATFILE_BINARY
+//#define MATFILE_DUAL
+
+#ifndef MATFILE_PRECISION
+#define MATFILE_PRECISION 16
+#endif
+
+#include "SLISC/arithmatic.h"
+
+#if defined(MATFILE_BINARY) || defined(MATFILE_DUAL)
+#include "mat.h"
+#endif
+
+namespace slisc {
+
+#ifndef MATFILE_BINARY
+// MATFile class for text mode
+struct MATTFile {
+	char rw; // 'r' for read 'w' for write
+	std::ifstream in; // read file
+	std::ofstream out; // write file
+	Int n; // variable numbers
+	std::vector<std::string> name; // variable names
+	std::vector<Int> type; // variable types
+	std::vector<std::vector<Long>> size; // variable dimensions
+	std::vector<Long> ind; // variable positions (line indices)
+};
+
+MATTFile *mattOpen(std::string fname, Char_I *rw);
+
+void mattClose(MATTFile *pfile);
+#endif
+
+#if !(defined(MATFILE_BINARY) || defined(MATFILE_DUAL))
+typedef MATTFile MATFile;
+#define matOpen mattOpen
+#define matClose mattClose
+#define matsave mattsave
+#define matload mattload
+#endif
+
+// matsave()
+
+void matsave(Uchar_I s, const std::string &varname, MATFile *pfile);
+
+void matsave(Int_I s, const std::string &varname, MATFile *pfile);
+
+void matsave(Doub_I s, const std::string &varname, MATFile *pfile);
+
+void matsave(Comp_I s, const std::string &varname, MATFile *pfile);
+
+void matsave(VecUchar_I &v, const std::string &varname, MATFile *pfile);
+
+void matsave(VecInt_I &v, const std::string &varname, MATFile *pfile);
+
+void matsave(VecDoub_I &v, const std::string &varname, MATFile *pfile);
+
+void matsave(VecComp_I &v, const std::string &varname, MATFile *pfile);
+
+void matsave(MatUchar_I &a, const std::string &varname, MATFile *pfile,
+	Long_I step1 = 1, Long_I step2 = 1);
+
+void matsave(MatInt_I &a, const std::string &varname, MATFile *pfile,
+			Long_I step1 = 1, Long_I step2 = 1);
+
+void matsave(MatDoub_I &a, const std::string &varname, MATFile *pfile,
+			Long_I step1 = 1, Long_I step2 = 1);
+
+void matsave(MatComp_I &a, const std::string &varname, MATFile *pfile,
+			Long_I step1 = 1, Long_I step2 = 1);
+
+void matsave(Mat3Doub_I &a, const std::string &varname, MATFile *pfile,
+			Long_I step1 = 1, Long_I step2 = 1, Long_I step3 = 1);
+
+void matsave(Mat3Doub_I &a, const std::string &varname, MATFile *pfile,
+			Char_I xyz, const VecInt_I &slice, Long_I step1 = 1, Long_I step2 = 1);
+
+void matsave(Mat3Comp_I &a, const std::string &varname, MATFile *pfile,
+			Long_I step1 = 1, Long_I step2 = 1, Long_I step3 = 1);
+
+void matsave(Mat3Comp_I &a, const std::string &varname, MATFile *pfile,
+			Char_I xyz, VecInt_I &slice, Long_I step1 = 1, Long_I step2 = 1);
+
+// matload()
+
+void matload(Uchar &i, const std::string &varname, MATFile *pfile);
+
+void matload(Int &i, const std::string &varname, MATFile *pfile);
+
+void matload(Doub &s, const std::string &varname, MATFile *pfile);
+
+void matload(Comp &s, const std::string &varname, MATFile *pfile);
+
+void matload(VecUchar_O &v, const std::string &varname, MATFile *pfile);
+
+void matload(VecInt_O &v, const std::string &varname, MATFile *pfile);
+
+void matload(VecDoub_O &v, const std::string &varname, MATFile *pfile);
+
+void matload(VecComp_O &v, const std::string &varname, MATFile *pfile);
+
+void matload(MatUchar_O &a, const std::string &varname, MATFile *pfile);
+
+void matload(MatInt_O &a, const std::string &varname, MATFile *pfile);
+
+void matload(MatDoub_O &a, const std::string &varname, MATFile *pfile);
+
+void matload(MatComp_O &a, const std::string &varname, MATFile *pfile);
+
+void matload(Mat3Doub_O &a, const std::string &varname, MATFile *pfile);
+
+void matload(Mat3Comp_O &a, const std::string &varname, MATFile *pfile);
+
+#ifdef MATFILE_DUAL
+void mattsave(Uchar_I s, const std::string &varname, MATTFile *pfile);
+
+void mattsave(Int_I s, const std::string &varname, MATTFile *pfile);
+
+void mattsave(Doub_I s, const std::string &varname, MATTFile *pfile);
+
+void mattsave(Comp_I s, const std::string &varname, MATTFile *pfile);
+
+void mattsave(VecUchar_I &v, const std::string &varname, MATTFile *pfile);
+
+void mattsave(VecInt_I &v, const std::string &varname, MATTFile *pfile);
+
+void mattsave(VecDoub_I &v, const std::string &varname, MATTFile *pfile);
+
+void mattsave(VecComp_I &v, const std::string &varname, MATTFile *pfile);
+
+void mattsave(MatUchar_I &a, const std::string &varname, MATTFile *pfile,
+	Long_I step1 = 1, Long_I step2 = 1);
+
+void mattsave(MatInt_I &a, const std::string &varname, MATTFile *pfile,
+	Long_I step1 = 1, Long_I step2 = 1);
+
+void mattsave(MatDoub_I &a, const std::string &varname, MATTFile *pfile,
+	Long_I step1 = 1, Long_I step2 = 1);
+
+void mattsave(MatComp_I &a, const std::string &varname, MATTFile *pfile,
+	Long_I step1 = 1, Long_I step2 = 1);
+
+void mattsave(Mat3Doub_I &a, const std::string &varname, MATTFile *pfile,
+	Long_I step1 = 1, Long_I step2 = 1, Long_I step3 = 1);
+
+void mattsave(Mat3Doub_I &a, const std::string &varname, MATTFile *pfile,
+	Char_I xyz, const VecInt_I &slice, Long_I step1 = 1, Long_I step2 = 1);
+
+void mattsave(Mat3Comp_I &a, const std::string &varname, MATTFile *pfile,
+	Long_I step1 = 1, Long_I step2 = 1, Long_I step3 = 1);
+
+void mattsave(Mat3Comp_I &a, const std::string &varname, MATTFile *pfile,
+	Char_I xyz, VecInt_I &slice, Long_I step1 = 1, Long_I step2 = 1);
+
+// matload()
+
+void mattload(Uchar &i, const std::string &varname, MATTFile *pfile);
+
+void mattload(Int &i, const std::string &varname, MATTFile *pfile);
+
+void mattload(Doub &s, const std::string &varname, MATTFile *pfile);
+
+void mattload(Comp &s, const std::string &varname, MATTFile *pfile);
+
+void mattload(VecUchar_O &v, const std::string &varname, MATTFile *pfile);
+
+void mattload(VecInt_O &v, const std::string &varname, MATTFile *pfile);
+
+void mattload(VecDoub_O &v, const std::string &varname, MATTFile *pfile);
+
+void mattload(VecComp_O &v, const std::string &varname, MATTFile *pfile);
+
+void mattload(MatUchar_O &a, const std::string &varname, MATTFile *pfile);
+
+void mattload(MatInt_O &a, const std::string &varname, MATTFile *pfile);
+
+void mattload(MatDoub_O &a, const std::string &varname, MATTFile *pfile);
+
+void mattload(MatComp_O &a, const std::string &varname, MATTFile *pfile);
+
+void mattload(Mat3Doub_O &a, const std::string &varname, MATTFile *pfile);
+
+void mattload(Mat3Comp_O &a, const std::string &varname, MATTFile *pfile);
+
+void mat2matt(const std::string &fmat, const std::string &fmatt);
+
+void matt2mat(const std::string &fmatt, const std::string &fmat);
+#endif
+
+
+// ==========  Implementation ============
 
 #if defined(MATFILE_BINARY) || defined(MATFILE_DUAL)
 
-void matsave(Uchar_I s, const string &varname, MATFile *pfile)
+inline void matsave(Uchar_I s, const std::string &varname, MATFile *pfile)
 {
 	mxArray *ps;
 	ps = mxCreateNumericMatrix(1, 1, mxUINT8_CLASS, mxREAL);
@@ -14,7 +207,7 @@ void matsave(Uchar_I s, const string &varname, MATFile *pfile)
 	mxDestroyArray(ps);
 }
 
-void matsave(Int_I s, const string &varname, MATFile *pfile)
+inline void matsave(Int_I s, const std::string &varname, MATFile *pfile)
 {
 	mxArray *ps;
 	ps = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
@@ -24,7 +217,7 @@ void matsave(Int_I s, const string &varname, MATFile *pfile)
 	mxDestroyArray(ps);
 }
 
-void matsave(Doub_I s, const string &varname, MATFile *pfile)
+inline void matsave(Doub_I s, const std::string &varname, MATFile *pfile)
 {
 	mxArray *ps;
 	ps = mxCreateDoubleMatrix(1, 1, mxREAL);
@@ -34,7 +227,7 @@ void matsave(Doub_I s, const string &varname, MATFile *pfile)
 	mxDestroyArray(ps);
 }
 
-void matsave(Comp_I s, const string &varname, MATFile *pfile)
+inline void matsave(Comp_I s, const std::string &varname, MATFile *pfile)
 {
 	mxArray *pa;
 	pa = mxCreateDoubleMatrix(1, 1, mxCOMPLEX);
@@ -47,7 +240,7 @@ void matsave(Comp_I s, const string &varname, MATFile *pfile)
 	mxDestroyArray(pa);
 }
 
-void matsave(VecUchar_I &v, const string &varname, MATFile *pfile)
+inline void matsave(VecUchar_I &v, const std::string &varname, MATFile *pfile)
 {
 	Long i, n;
 	mxArray *pv;
@@ -60,7 +253,7 @@ void matsave(VecUchar_I &v, const string &varname, MATFile *pfile)
 	mxDestroyArray(pv);
 }
 
-void matsave(VecInt_I &v, const string &varname, MATFile *pfile)
+inline void matsave(VecInt_I &v, const std::string &varname, MATFile *pfile)
 {
 	Long i, n;
 	mxArray *pv;
@@ -73,7 +266,7 @@ void matsave(VecInt_I &v, const string &varname, MATFile *pfile)
 	mxDestroyArray(pv);
 }
 
-void matsave(VecDoub_I &v, const string &varname, MATFile *pfile)
+inline void matsave(VecDoub_I &v, const std::string &varname, MATFile *pfile)
 {
 	Long i, n;
 	mxArray *pv;
@@ -86,10 +279,10 @@ void matsave(VecDoub_I &v, const string &varname, MATFile *pfile)
 	mxDestroyArray(pv);
 }
 
-void matsave(VecComp_I &v, const string &varname, MATFile *pfile)
+inline void matsave(VecComp_I &v, const std::string &varname, MATFile *pfile)
 {
 	Long i, n;
-	string str;
+	std::string str;
 	mxArray *pv;
 	n = v.size();
 	pv = mxCreateUninitNumericMatrix(1, n, mxDOUBLE_CLASS, mxCOMPLEX);
@@ -103,7 +296,7 @@ void matsave(VecComp_I &v, const string &varname, MATFile *pfile)
 	mxDestroyArray(pv);
 }
 
-void matsave(MatUchar_I &a, const string &varname, MATFile *pfile,
+inline void matsave(MatUchar_I &a, const std::string &varname, MATFile *pfile,
 	Long_I step1, Long_I step2)
 {
 	Long i, j, m, n;
@@ -120,7 +313,7 @@ void matsave(MatUchar_I &a, const string &varname, MATFile *pfile,
 	mxDestroyArray(pa);
 }
 
-void matsave(MatInt_I &a, const string &varname, MATFile *pfile,
+inline void matsave(MatInt_I &a, const std::string &varname, MATFile *pfile,
 	Long_I step1, Long_I step2)
 {
 	Long i, j, m, n;
@@ -136,7 +329,7 @@ void matsave(MatInt_I &a, const string &varname, MATFile *pfile,
 	mxDestroyArray(pa);
 }
 
-void matsave(MatDoub_I &a, const string &varname, MATFile *pfile, 
+inline void matsave(MatDoub_I &a, const std::string &varname, MATFile *pfile, 
 			Long_I step1, Long_I step2)
 {
 	Long i, j, m, n;
@@ -152,7 +345,7 @@ void matsave(MatDoub_I &a, const string &varname, MATFile *pfile,
 	mxDestroyArray(pa);
 }
 
-void matsave(MatComp_I &a, const string &varname, MATFile *pfile,
+inline void matsave(MatComp_I &a, const std::string &varname, MATFile *pfile,
 			Long_I step1, Long_I step2)
 {
 	Long i, j, m, n, ind;
@@ -172,7 +365,7 @@ void matsave(MatComp_I &a, const string &varname, MATFile *pfile,
 	mxDestroyArray(pa);
 }
 
-void matsave(Mat3Doub_I &a, const string &varname, MATFile *pfile,
+inline void matsave(Mat3Doub_I &a, const std::string &varname, MATFile *pfile,
 	Long_I step1, Long_I step2, Long_I step3)
 {
 	Long i, j, k, m, n, q, mn;
@@ -192,7 +385,7 @@ void matsave(Mat3Doub_I &a, const string &varname, MATFile *pfile,
 }
 
 
-void matsave(Mat3Doub_I &a, const string &varname, MATFile *pfile,
+inline void matsave(Mat3Doub_I &a, const std::string &varname, MATFile *pfile,
 			Char_I xyz, VecInt_I &slice, Long_I step1, Long_I step2)
 {
 	Long i, j, k, m, n, mn, Nslice{ slice.size() }, ind;
@@ -239,7 +432,7 @@ void matsave(Mat3Doub_I &a, const string &varname, MATFile *pfile,
 	mxDestroyArray(pa);
 }
 
-void matsave(Mat3Comp_I &a, const string &varname, MATFile *pfile,
+inline void matsave(Mat3Comp_I &a, const std::string &varname, MATFile *pfile,
 	Long_I step1, Long_I step2, Long_I step3)
 {
 	Long i, j, k, m, n, q, mn, ind;
@@ -276,7 +469,7 @@ void matsave(Mat3Comp_I &a, const string &varname, MATFile *pfile,
 	mxDestroyArray(pa);
 }
 
-void matsave(Mat3Comp_I &a, const string &varname, MATFile *pfile,
+inline void matsave(Mat3Comp_I &a, const std::string &varname, MATFile *pfile,
 			Char_I xyz, VecInt_I &slice, Long_I step1, Long_I step2)
 {	
 	Long i, j, k, m, n, mn, inda, Nslice{ slice.size() }, ind;
@@ -333,7 +526,7 @@ void matsave(Mat3Comp_I &a, const string &varname, MATFile *pfile,
 	mxDestroyArray(pa);
 }
 
-void matload(Uchar &i, const string &varname, MATFile *pfile)
+inline void matload(Uchar &i, const std::string &varname, MATFile *pfile)
 {
 	mxArray *ps;
 	ps = matGetVariable(pfile, varname.c_str());
@@ -344,7 +537,7 @@ void matload(Uchar &i, const string &varname, MATFile *pfile)
 	mxDestroyArray(ps);
 }
 
-void matload(Int &i, const string &varname, MATFile *pfile)
+inline void matload(Int &i, const std::string &varname, MATFile *pfile)
 {
 	mxArray *ps;
 	ps = matGetVariable(pfile, varname.c_str());
@@ -355,7 +548,7 @@ void matload(Int &i, const string &varname, MATFile *pfile)
 	mxDestroyArray(ps);
 }
 
-void matload(Doub &s, const string &varname, MATFile *pfile)
+inline void matload(Doub &s, const std::string &varname, MATFile *pfile)
 {
 	mxArray *ps;
 	ps = matGetVariable(pfile, varname.c_str());
@@ -368,7 +561,7 @@ void matload(Doub &s, const string &varname, MATFile *pfile)
 	mxDestroyArray(ps);
 }
 
-void matload(Comp &s, const string &varname, MATFile *pfile)
+inline void matload(Comp &s, const std::string &varname, MATFile *pfile)
 {
 	mxArray *ps;
 	ps = matGetVariable(pfile, varname.c_str());
@@ -383,7 +576,7 @@ void matload(Comp &s, const string &varname, MATFile *pfile)
 	mxDestroyArray(ps);
 }
 
-void matload(VecUchar_O &v, const string &varname, MATFile *pfile)
+inline void matload(VecUchar_O &v, const std::string &varname, MATFile *pfile)
 {
 	Long i, n;
 	mxArray *pv;
@@ -398,7 +591,7 @@ void matload(VecUchar_O &v, const string &varname, MATFile *pfile)
 	mxDestroyArray(pv);
 }
 
-void matload(VecInt_O &v, const string &varname, MATFile *pfile)
+inline void matload(VecInt_O &v, const std::string &varname, MATFile *pfile)
 {
 	Long i, n;
 	mxArray *pv;
@@ -413,7 +606,7 @@ void matload(VecInt_O &v, const string &varname, MATFile *pfile)
 	mxDestroyArray(pv);
 }
 
-void matload(VecDoub_O &v, const string &varname, MATFile *pfile)
+inline void matload(VecDoub_O &v, const std::string &varname, MATFile *pfile)
 {
 	Long i, n;
 	mxArray *pv;
@@ -430,7 +623,7 @@ void matload(VecDoub_O &v, const string &varname, MATFile *pfile)
 	mxDestroyArray(pv);
 }
 
-void matload(VecComp_O &v, const string &varname, MATFile *pfile)
+inline void matload(VecComp_O &v, const std::string &varname, MATFile *pfile)
 {
 	Long i, n;
 	mxArray *pv;
@@ -450,7 +643,7 @@ void matload(VecComp_O &v, const string &varname, MATFile *pfile)
 	mxDestroyArray(pv);
 }
 
-void matload(MatUchar_O &a, const string &varname, MATFile *pfile)
+inline void matload(MatUchar_O &a, const std::string &varname, MATFile *pfile)
 {
 	Long i, j, m, n;
 	mxArray *pa = matGetVariable(pfile, varname.c_str());
@@ -466,7 +659,7 @@ void matload(MatUchar_O &a, const string &varname, MATFile *pfile)
 	mxDestroyArray(pa);
 }
 
-void matload(MatInt_O &a, const string &varname, MATFile *pfile)
+inline void matload(MatInt_O &a, const std::string &varname, MATFile *pfile)
 {
 	Long i, j, m, n;
 	mxArray *pa = matGetVariable(pfile, varname.c_str());
@@ -482,7 +675,7 @@ void matload(MatInt_O &a, const string &varname, MATFile *pfile)
 	mxDestroyArray(pa);
 }
 
-void matload(MatDoub_O &a, const string &varname, MATFile *pfile)
+inline void matload(MatDoub_O &a, const std::string &varname, MATFile *pfile)
 {
 	Long i, j, m, n;
 	mxArray *pa = matGetVariable(pfile, varname.c_str());
@@ -500,7 +693,7 @@ void matload(MatDoub_O &a, const string &varname, MATFile *pfile)
 	mxDestroyArray(pa);
 }
 
-void matload(MatComp_O &a, const string &varname, MATFile *pfile)
+inline void matload(MatComp_O &a, const std::string &varname, MATFile *pfile)
 {
 	Long i, j, m, n, ind;
 	mxArray *pa;
@@ -525,7 +718,7 @@ void matload(MatComp_O &a, const string &varname, MATFile *pfile)
 	mxDestroyArray(pa);
 }
 
-void matload(Mat3Doub_O &a, const string &varname, MATFile *pfile)
+inline void matload(Mat3Doub_O &a, const std::string &varname, MATFile *pfile)
 {
 	Long i, j, k, m, n, q, mn;
 	mxArray *pa = matGetVariable(pfile, varname.c_str());
@@ -544,7 +737,7 @@ void matload(Mat3Doub_O &a, const string &varname, MATFile *pfile)
 	mxDestroyArray(pa);
 }
 
-void matload(Mat3Comp_O &a, const string &varname, MATFile *pfile)
+inline void matload(Mat3Comp_O &a, const std::string &varname, MATFile *pfile)
 {
 	Long i, j, k, m, n, q, mn, ind;
 	mxArray *pa = matGetVariable(pfile, varname.c_str());
@@ -575,7 +768,7 @@ void matload(Mat3Comp_O &a, const string &varname, MATFile *pfile)
 #ifndef MATFILE_BINARY
 
 // read the next variable after previous '\n'
-Long scanInverse(ifstream &fin)
+Long scanInverse(std::ifstream &fin)
 {
 	Char c;
 	Long ind, i, N;
@@ -592,12 +785,12 @@ Long scanInverse(ifstream &fin)
 
 // get var names and positions from the end of the file
 // after return, pfile->ind[i] points to the first matrix element;
-void getprofile(MATTFile *pfile)
+inline void getprofile(MATTFile *pfile)
 {
 	Int i, j, n, temp;
-	vector<Long> size;
-	string name;
-	ifstream &fin = pfile->in;
+	std::vector<Long> size;
+	std::string name;
+	std::ifstream &fin = pfile->in;
 
 	// read number of variables and their positions
 	fin.seekg(0, fin.end);
@@ -628,7 +821,7 @@ void getprofile(MATTFile *pfile)
 	}
 }
 
-MATTFile *mattOpen(string fname, Char_I *rw)
+MATTFile *mattOpen(std::string fname, Char_I *rw)
 {
 	// must open file in binary mode, otherwise, '\n' will be written as "\r\n"
 	// and seekg() will not work the same in linux.
@@ -640,14 +833,14 @@ MATTFile *mattOpen(string fname, Char_I *rw)
 	if (rw[0] == 'w') {
 		pfile->rw = 'w';
 		pfile->n = 0;
-		pfile->out = ofstream(fname, ios_base::binary);
+		pfile->out = std::ofstream(fname, std::ios_base::binary);
 		#ifdef MATFILE_PRECISION
 			pfile->out.precision(MATFILE_PRECISION);
 		#endif
 	}
 	else {
 		pfile->rw = 'r';
-		pfile->in = ifstream(fname, ios_base::binary);
+		pfile->in = std::ifstream(fname, std::ios_base::binary);
 		if (!pfile->in)
 			error("error: file not found: ")
 		pfile->in.precision(17);
@@ -656,11 +849,11 @@ MATTFile *mattOpen(string fname, Char_I *rw)
 	return pfile;
 }
 
-void mattClose(MATTFile* pfile)
+inline void mattClose(MATTFile* pfile)
 {
 	Llong i;
 	if (pfile->rw == 'w') {
-		ofstream &fout = pfile->out;
+		std::ofstream &fout = pfile->out;
 		// write position of variables
 		for (i = pfile->ind.size() - 1; i >= 0; --i)
 			fout << pfile->ind[i] << "\n";
@@ -674,10 +867,10 @@ void mattClose(MATTFile* pfile)
 	delete pfile;
 }
 
-void mattsave(Uchar_I s, const string &varname, MATTFile *pfile)
+inline void mattsave(Uchar_I s, const std::string &varname, MATTFile *pfile)
 {
 	Long i, n;
-	ofstream &fout = pfile->out;
+	std::ofstream &fout = pfile->out;
 	++pfile->n; pfile->ind.push_back(fout.tellp());
 	// write variable name info
 	n = varname.size();
@@ -693,10 +886,10 @@ void mattsave(Uchar_I s, const string &varname, MATTFile *pfile)
 	fout << (Int)s << '\n';
 }
 
-void mattsave(Int_I s, const string &varname, MATTFile *pfile)
+inline void mattsave(Int_I s, const std::string &varname, MATTFile *pfile)
 {
 	Long i, n;
-	ofstream &fout = pfile->out;
+	std::ofstream &fout = pfile->out;
 	++pfile->n; pfile->ind.push_back(fout.tellp());
 	// write variable name info
 	n = varname.size();
@@ -712,10 +905,10 @@ void mattsave(Int_I s, const string &varname, MATTFile *pfile)
 	fout << s << '\n';
 }
 
-void mattsave(Doub_I s, const string &varname, MATTFile *pfile)
+inline void mattsave(Doub_I s, const std::string &varname, MATTFile *pfile)
 {
 	Long i, n;
-	ofstream &fout = pfile->out;
+	std::ofstream &fout = pfile->out;
 	++pfile->n; pfile->ind.push_back(fout.tellp());
 	// write variable name info
 	n = varname.size();
@@ -731,10 +924,10 @@ void mattsave(Doub_I s, const string &varname, MATTFile *pfile)
 	fout << s << '\n';
 }
 
-void mattsave(Comp_I s, const string &varname, MATTFile *pfile)
+inline void mattsave(Comp_I s, const std::string &varname, MATTFile *pfile)
 {
 	Long i, n;
-	ofstream &fout = pfile->out;
+	std::ofstream &fout = pfile->out;
 	++pfile->n; pfile->ind.push_back(fout.tellp());
 	// write variable name info
 	n = varname.size();
@@ -755,10 +948,10 @@ void mattsave(Comp_I s, const string &varname, MATTFile *pfile)
 		fout << real(s) << '+' << imag(s) << "i\n";
 }
 
-void mattsave(VecUchar_I &v, const string &varname, MATTFile *pfile)
+inline void mattsave(VecUchar_I &v, const std::string &varname, MATTFile *pfile)
 {
 	Long i, n;
-	ofstream &fout = pfile->out;
+	std::ofstream &fout = pfile->out;
 	++pfile->n; pfile->ind.push_back(fout.tellp());
 	// write variable name info
 	n = varname.size();
@@ -777,10 +970,10 @@ void mattsave(VecUchar_I &v, const string &varname, MATTFile *pfile)
 	}
 }
 
-void mattsave(VecInt_I &v, const string &varname, MATTFile *pfile)
+inline void mattsave(VecInt_I &v, const std::string &varname, MATTFile *pfile)
 {
 	Long i, n;
-	ofstream &fout = pfile->out;
+	std::ofstream &fout = pfile->out;
 	++pfile->n; pfile->ind.push_back(fout.tellp());
 	// write variable name info
 	n = varname.size();
@@ -799,10 +992,10 @@ void mattsave(VecInt_I &v, const string &varname, MATTFile *pfile)
 	}
 }
 
-void mattsave(VecDoub_I &v, const string &varname, MATTFile *pfile)
+inline void mattsave(VecDoub_I &v, const std::string &varname, MATTFile *pfile)
 {
 	Long i, n;
-	ofstream &fout = pfile->out;
+	std::ofstream &fout = pfile->out;
 	++pfile->n; pfile->ind.push_back(fout.tellp());
 	// write variable name info
 	n = varname.size();
@@ -821,11 +1014,11 @@ void mattsave(VecDoub_I &v, const string &varname, MATTFile *pfile)
 	}
 }
 
-void mattsave(VecComp_I &v, const string &varname, MATTFile *pfile)
+inline void mattsave(VecComp_I &v, const std::string &varname, MATTFile *pfile)
 {
 	Long i, n;
 	Doub cr, ci;
-	ofstream &fout = pfile->out;
+	std::ofstream &fout = pfile->out;
 	++pfile->n; pfile->ind.push_back(fout.tellp());
 	// write variable name info
 	n = varname.size();
@@ -849,11 +1042,11 @@ void mattsave(VecComp_I &v, const string &varname, MATTFile *pfile)
 	}
 }
 
-void mattsave(MatUchar_I &a, const string &varname, MATTFile *pfile,
+inline void mattsave(MatUchar_I &a, const std::string &varname, MATTFile *pfile,
 	Long_I step1, Long_I step2)
 {
 	Long i, j, m, n;
-	ofstream &fout = pfile->out;
+	std::ofstream &fout = pfile->out;
 	++pfile->n; pfile->ind.push_back(fout.tellp());
 	// write variable name info
 	n = varname.size();
@@ -873,11 +1066,11 @@ void mattsave(MatUchar_I &a, const string &varname, MATTFile *pfile,
 		}
 }
 
-void mattsave(MatInt_I &a, const string &varname, MATTFile *pfile,
+inline void mattsave(MatInt_I &a, const std::string &varname, MATTFile *pfile,
 	Long_I step1, Long_I step2)
 {
 	Long i, j, m, n;
-	ofstream &fout = pfile->out;
+	std::ofstream &fout = pfile->out;
 	++pfile->n; pfile->ind.push_back(fout.tellp());
 	// write variable name info
 	n = varname.size();
@@ -897,11 +1090,11 @@ void mattsave(MatInt_I &a, const string &varname, MATTFile *pfile,
 		}
 }
 
-void mattsave(MatDoub_I &a, const string &varname, MATTFile *pfile,
+inline void mattsave(MatDoub_I &a, const std::string &varname, MATTFile *pfile,
 	Long_I step1, Long_I step2)
 {
 	Long i, j, m, n;
-	ofstream &fout = pfile->out;
+	std::ofstream &fout = pfile->out;
 	++pfile->n; pfile->ind.push_back(fout.tellp());
 	// write variable name info
 	n = varname.size();
@@ -921,12 +1114,12 @@ void mattsave(MatDoub_I &a, const string &varname, MATTFile *pfile,
 		}
 }
 
-void mattsave(MatComp_I &a, const string &varname, MATTFile *pfile,
+inline void mattsave(MatComp_I &a, const std::string &varname, MATTFile *pfile,
 	Long_I step1, Long_I step2)
 {
 	Long i, j, m, n;
 	Comp c; Doub cr, ci;
-	ofstream &fout = pfile->out;
+	std::ofstream &fout = pfile->out;
 	++pfile->n; pfile->ind.push_back(fout.tellp());
 	// write variable name info
 	n = varname.size();
@@ -952,11 +1145,11 @@ void mattsave(MatComp_I &a, const string &varname, MATTFile *pfile,
 		}
 }
 
-void mattsave(Mat3Doub_I &a, const string &varname, MATTFile *pfile,
+inline void mattsave(Mat3Doub_I &a, const std::string &varname, MATTFile *pfile,
 	Long_I step1, Long_I step2, Long_I step3)
 {
 	Long i, j, k, m, n, q;
-	ofstream &fout = pfile->out;
+	std::ofstream &fout = pfile->out;
 	++pfile->n; pfile->ind.push_back(fout.tellp());
 	// write variable name info
 	n = varname.size();
@@ -977,11 +1170,11 @@ void mattsave(Mat3Doub_I &a, const string &varname, MATTFile *pfile,
 		fout << a[step1*i][step2*j][step3*k] << '\n';
 }
 
-void mattsave(Mat3Doub_I &a, const string &varname, MATTFile *pfile,
+inline void mattsave(Mat3Doub_I &a, const std::string &varname, MATTFile *pfile,
 	Char_I xyz, VecInt_I &slice, Long_I step1, Long_I step2)
 {
 	Long i, j, k, m, n, ind, Nslice{ slice.size() };
-	ofstream &fout = pfile->out;
+	std::ofstream &fout = pfile->out;
 	++pfile->n; pfile->ind.push_back(fout.tellp());
 	// write variable name info
 	n = varname.size();
@@ -1031,12 +1224,12 @@ void mattsave(Mat3Doub_I &a, const string &varname, MATTFile *pfile,
 		error("illegal value of xyz")
 }
 
-void mattsave(Mat3Comp_I &a, const string &varname, MATTFile *pfile,
+inline void mattsave(Mat3Comp_I &a, const std::string &varname, MATTFile *pfile,
 	Long_I step1, Long_I step2, Long_I step3)
 {
 	Long i, j, k, m, n, q;
 	Comp c; Doub cr, ci;
-	ofstream &fout = pfile->out;
+	std::ofstream &fout = pfile->out;
 	++pfile->n; pfile->ind.push_back(fout.tellp());
 	// write variable name info
 	n = varname.size();
@@ -1064,12 +1257,12 @@ void mattsave(Mat3Comp_I &a, const string &varname, MATTFile *pfile,
 			}
 }
 
-void mattsave(Mat3Comp_I &a, const string &varname, MATTFile *pfile,
+inline void mattsave(Mat3Comp_I &a, const std::string &varname, MATTFile *pfile,
 	Char_I xyz, VecInt_I &slice, Long_I step1, Long_I step2)
 {
 	Long i, j, k, m, n, ind, Nslice{ slice.size() };
 	Comp c; Doub cr, ci;
-	ofstream &fout = pfile->out;
+	std::ofstream &fout = pfile->out;
 	++pfile->n; pfile->ind.push_back(fout.tellp());
 	// write variable name info
 	n = varname.size();
@@ -1143,7 +1336,7 @@ void mattsave(Mat3Comp_I &a, const string &varname, MATTFile *pfile,
 }
 
 // search variable in file by name
-inline Int nameSearch(const string &name, MATTFile *pfile)
+inline Int nameSearch(const std::string &name, MATTFile *pfile)
 {
 	for (Int i = 0; i < pfile->n; ++i)
 		if (name == pfile->name[i])
@@ -1152,7 +1345,7 @@ inline Int nameSearch(const string &name, MATTFile *pfile)
 	return -1;
 }
 
-inline void scanComplex(Comp &c, ifstream &fin)
+inline void scanComplex(Comp &c, std::ifstream &fin)
 {
 	Doub cr = 0, ci = 0;
 	Uchar ch;
@@ -1168,10 +1361,10 @@ inline void scanComplex(Comp &c, ifstream &fin)
 	fin.ignore(100, '\n');
 }
 
-void mattload(Uchar &I, const string &varname, MATTFile *pfile)
+inline void mattload(Uchar &I, const std::string &varname, MATTFile *pfile)
 {
 	Int i, temp;
-	ifstream &fin = pfile->in;
+	std::ifstream &fin = pfile->in;
 	i = nameSearch(varname, pfile);
 	fin.seekg(pfile->ind[i]);
 
@@ -1182,10 +1375,10 @@ void mattload(Uchar &I, const string &varname, MATTFile *pfile)
 	fin >> temp; I = Uchar(temp);
 }
 
-void mattload(Int &I, const string &varname, MATTFile *pfile)
+inline void mattload(Int &I, const std::string &varname, MATTFile *pfile)
 {
 	Int i;
-	ifstream &fin = pfile->in;
+	std::ifstream &fin = pfile->in;
 	i = nameSearch(varname, pfile);
 	fin.seekg(pfile->ind[i]);
 	
@@ -1196,10 +1389,10 @@ void mattload(Int &I, const string &varname, MATTFile *pfile)
 	fin >> I;
 }
 
-void mattload(Doub &I, const string &varname, MATTFile *pfile)
+inline void mattload(Doub &I, const std::string &varname, MATTFile *pfile)
 {
 	Int i;
-	ifstream &fin = pfile->in;
+	std::ifstream &fin = pfile->in;
 	i = nameSearch(varname, pfile);
 	fin.seekg(pfile->ind[i]);
 
@@ -1210,10 +1403,10 @@ void mattload(Doub &I, const string &varname, MATTFile *pfile)
 	fin >> I;
 }
 
-void mattload(Comp &I, const string &varname, MATTFile *pfile)
+inline void mattload(Comp &I, const std::string &varname, MATTFile *pfile)
 {
 	Int i;
-	ifstream &fin = pfile->in;
+	std::ifstream &fin = pfile->in;
 	i = nameSearch(varname, pfile);
 	fin.seekg(pfile->ind[i]);
 
@@ -1224,10 +1417,10 @@ void mattload(Comp &I, const string &varname, MATTFile *pfile)
 	scanComplex(I, fin);
 }
 
-void mattload(VecUchar_O &v, const string &varname, MATTFile *pfile)
+inline void mattload(VecUchar_O &v, const std::string &varname, MATTFile *pfile)
 {
 	Long i, n, dim, temp;
-	ifstream &fin = pfile->in;
+	std::ifstream &fin = pfile->in;
 	i = nameSearch(varname, pfile);
 	fin.seekg(pfile->ind[i]);
 
@@ -1242,10 +1435,10 @@ void mattload(VecUchar_O &v, const string &varname, MATTFile *pfile)
 	}
 }
 
-void mattload(VecInt_O &v, const string &varname, MATTFile *pfile)
+inline void mattload(VecInt_O &v, const std::string &varname, MATTFile *pfile)
 {
 	Long i, dim, n;
-	ifstream &fin = pfile->in;
+	std::ifstream &fin = pfile->in;
 	i = nameSearch(varname, pfile);
 	fin.seekg(pfile->ind[i]);
 
@@ -1259,10 +1452,10 @@ void mattload(VecInt_O &v, const string &varname, MATTFile *pfile)
 		fin >> v[i];
 }
 
-void mattload(VecDoub_O &v, const string &varname, MATTFile *pfile)
+inline void mattload(VecDoub_O &v, const std::string &varname, MATTFile *pfile)
 {
 	Long i, dim, n;
-	ifstream &fin = pfile->in;
+	std::ifstream &fin = pfile->in;
 	i = nameSearch(varname, pfile);
 	fin.seekg(pfile->ind[i]);
 
@@ -1276,10 +1469,10 @@ void mattload(VecDoub_O &v, const string &varname, MATTFile *pfile)
 		fin >> v[i];
 }
 
-void mattload(VecComp_O &v, const string &varname, MATTFile *pfile)
+inline void mattload(VecComp_O &v, const std::string &varname, MATTFile *pfile)
 {
 	Long i, dim, n;
-	ifstream &fin = pfile->in;
+	std::ifstream &fin = pfile->in;
 	i = nameSearch(varname, pfile);
 	fin.seekg(pfile->ind[i]);
 
@@ -1293,10 +1486,10 @@ void mattload(VecComp_O &v, const string &varname, MATTFile *pfile)
 		scanComplex(v[i], fin);
 }
 
-void mattload(MatUchar_O &a, const string &varname, MATTFile *pfile)
+inline void mattload(MatUchar_O &a, const std::string &varname, MATTFile *pfile)
 {
 	Long i, j, dim, m, n, temp;
-	ifstream &fin = pfile->in;
+	std::ifstream &fin = pfile->in;
 	i = nameSearch(varname, pfile);
 	fin.seekg(pfile->ind[i]);
 
@@ -1312,10 +1505,10 @@ void mattload(MatUchar_O &a, const string &varname, MATTFile *pfile)
 		}
 }
 
-void mattload(MatInt_O &a, const string &varname, MATTFile *pfile)
+inline void mattload(MatInt_O &a, const std::string &varname, MATTFile *pfile)
 {
 	Long i, j, dim, m, n;
-	ifstream &fin = pfile->in;
+	std::ifstream &fin = pfile->in;
 	i = nameSearch(varname, pfile);
 	fin.seekg(pfile->ind[i]);
 
@@ -1330,10 +1523,10 @@ void mattload(MatInt_O &a, const string &varname, MATTFile *pfile)
 			fin >> a[i][j];
 }
 
-void mattload(MatDoub_O &a, const string &varname, MATTFile *pfile)
+inline void mattload(MatDoub_O &a, const std::string &varname, MATTFile *pfile)
 {
 	Long i, j, dim, m, n;
-	ifstream &fin = pfile->in;
+	std::ifstream &fin = pfile->in;
 	i = nameSearch(varname, pfile);
 	fin.seekg(pfile->ind[i]);
 
@@ -1348,10 +1541,10 @@ void mattload(MatDoub_O &a, const string &varname, MATTFile *pfile)
 			fin >> a[i][j];
 }
 
-void mattload(MatComp_O &a, const string &varname, MATTFile *pfile)
+inline void mattload(MatComp_O &a, const std::string &varname, MATTFile *pfile)
 {
 	Long i, j, dim, m, n;
-	ifstream &fin = pfile->in;
+	std::ifstream &fin = pfile->in;
 	i = nameSearch(varname, pfile);
 	fin.seekg(pfile->ind[i]);
 
@@ -1366,10 +1559,10 @@ void mattload(MatComp_O &a, const string &varname, MATTFile *pfile)
 			scanComplex(a[i][j], fin);
 }
 
-void mattload(Mat3Doub_O &a, const string &varname, MATTFile *pfile)
+inline void mattload(Mat3Doub_O &a, const std::string &varname, MATTFile *pfile)
 {
 	Long i, j, k, dim, m, n, q;
-	ifstream &fin = pfile->in;
+	std::ifstream &fin = pfile->in;
 	i = nameSearch(varname, pfile);
 	fin.seekg(pfile->ind[i]);
 
@@ -1386,10 +1579,10 @@ void mattload(Mat3Doub_O &a, const string &varname, MATTFile *pfile)
 				fin >> a[i][j][k];
 }
 
-void mattload(Mat3Comp_O &a, const string &varname, MATTFile *pfile)
+inline void mattload(Mat3Comp_O &a, const std::string &varname, MATTFile *pfile)
 {
 	Long i, j, k, dim, m, n, q;
-	ifstream &fin = pfile->in;
+	std::ifstream &fin = pfile->in;
 	i = nameSearch(varname, pfile);
 	fin.seekg(pfile->ind[i]);
 
@@ -1409,7 +1602,7 @@ void mattload(Mat3Comp_O &a, const string &varname, MATTFile *pfile)
 #endif
 
 #ifdef MATFILE_DUAL
-void mat2matt(const string &fmat, const string &fmatt)
+inline void mat2matt(const std::string &fmat, const std::string &fmatt)
 {
 	Int n;
 	Long i, ndim;
@@ -1524,8 +1717,10 @@ void mat2matt(const string &fmat, const string &fmatt)
 	mattClose(pfmatt);
 }
 
-void matt2mat(const string &fmatt, const string &fmat)
+inline void matt2mat(const std::string &fmatt, const std::string &fmat)
 {
 	error("this function is not complete")
 }
 #endif
+
+} // namespace slisc
