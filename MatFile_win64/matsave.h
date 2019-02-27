@@ -821,7 +821,7 @@ inline void getprofile(MATTFile *pfile)
 	}
 }
 
-MATTFile *mattOpen(const std::string &fname, Char_I *rw)
+MATTFile *mattOpen(std::string fname, Char_I *rw)
 {
 	// must open file in binary mode, otherwise, '\n' will be written as "\r\n"
 	// and seekg() will not work the same in linux.
