@@ -10,7 +10,7 @@
 #define MATFILE_PRECISION 16
 #endif
 
-#include "../SLISC/arithmatic.h"
+#include "../SLISC/slisc.h"
 
 #if defined(MATFILE_BINARY) || defined(MATFILE_DUAL)
 #include "mat.h"
@@ -307,7 +307,7 @@ inline void matsave(MatUchar_I &a, const std::string &varname, MATFile *pfile,
 	Uchar *ppa = (Uchar*)mxGetPr(pa);
 	for (i = 0; i < m; ++i)
 		for (j = 0; j < n; ++j) {
-			ppa[i + m * j] = a[step1*i][step2*j];
+			ppa[i + m * j] = a(step1*i, step2*j);
 		}
 	matPutVariable(pfile, varname.c_str(), pa);
 	mxDestroyArray(pa);
@@ -323,7 +323,7 @@ inline void matsave(MatInt_I &a, const std::string &varname, MATFile *pfile,
 	Int *ppa = (Int*)mxGetPr(pa);
 	for (i = 0; i < m; ++i)
 		for (j = 0; j < n; ++j) {
-			ppa[i + m * j] = a[step1*i][step2*j];
+			ppa[i + m * j] = a(step1*i, step2*j);
 		}
 	matPutVariable(pfile, varname.c_str(), pa);
 	mxDestroyArray(pa);
@@ -339,7 +339,7 @@ inline void matsave(MatDoub_I &a, const std::string &varname, MATFile *pfile,
 	auto ppa = mxGetPr(pa);
 	for (i = 0; i < m; ++i)
 		for (j = 0; j < n; ++j) {
-			ppa[i + m*j] = a[step1*i][step2*j];
+			ppa[i + m*j] = a(step1*i, step2*j);
 		}
 	matPutVariable(pfile, varname.c_str(), pa);
 	mxDestroyArray(pa);
@@ -357,7 +357,7 @@ inline void matsave(MatComp_I &a, const std::string &varname, MATFile *pfile,
 	auto ppai = mxGetPi(pa);
 	for (i = 0; i < m; ++i)
 		for (j = 0; j < n; ++j) {
-			ind = i + m * j; c = a[step1*i][step2*j];
+			ind = i + m * j; c = a(step1*i, step2*j);
 			ppar[ind] = real(c);
 			ppai[ind] = imag(c);
 		}
@@ -379,7 +379,7 @@ inline void matsave(Mat3Doub_I &a, const std::string &varname, MATFile *pfile,
 	for (i = 0; i < m; ++i)
 		for (j = 0; j < n; ++j)
 			for (k = 0; k < q; ++k)
-				ppa[i + m * j + mn * k] = a[step1*i][step2*j][step3*k];
+				ppa[i + m * j + mn * k] = a(step1*i, step2*j, step3*k);
 	matPutVariable(pfile, varname.c_str(), pa);
 	mxDestroyArray(pa);
 }
@@ -399,7 +399,7 @@ inline void matsave(Mat3Doub_I &a, const std::string &varname, MATFile *pfile,
 			ind = slice[i];
 			for (j = 0; j < m; ++j)
 				for (k = 0; k < n; ++k)
-					ppa[j + m*k + mn*i] = a[ind][step1*j][step2*k];
+					ppa[j + m * k + mn * i] = a(ind, step1*j, step2*k);
 		}
 	}
 	else if (xyz == 'y') {
@@ -411,7 +411,7 @@ inline void matsave(Mat3Doub_I &a, const std::string &varname, MATFile *pfile,
 			ind = slice[j];
 			for (k = 0; k < m; ++k)
 				for (i = 0; i < n; ++i)
-					ppa[k + m*i + mn*j] = a[step2*i][ind][step1*k];
+					ppa[k + m * i + mn * j] = a(step2*i, ind, step1*k);
 		}
 	}
 	else if (xyz == 'z') {
@@ -423,11 +423,11 @@ inline void matsave(Mat3Doub_I &a, const std::string &varname, MATFile *pfile,
 			ind = slice[k];
 			for (i = 0; i < m; ++i)
 				for (j = 0; j < n; ++j)
-					ppa[i + m*j + mn*k] = a[step1*i][step2*j][ind];
+					ppa[i + m * j + mn * k] = a(step1*i, step2*j, ind);
 		}
 	}
 	else
-		error("error! illegal value of xyz")
+		error("error! illegal value of xyz");
 	matPutVariable(pfile, varname.c_str(), pa);
 	mxDestroyArray(pa);
 }
@@ -449,7 +449,7 @@ inline void matsave(Mat3Comp_I &a, const std::string &varname, MATFile *pfile,
 			for (j = 0; j < n; ++j)
 				for (k = 0; k < q; ++k) {
 					ind = i + m * j + mn * k;
-					c = a[step1*i][step2*j][step3*k];
+					c = a(step1*i, step2*j, step3*k);
 					ppar[ind] = real(c); ppai[ind] = imag(c);
 				}
 	}
@@ -461,7 +461,7 @@ inline void matsave(Mat3Comp_I &a, const std::string &varname, MATFile *pfile,
 			for (j = 0; j < n; ++j)
 				for (k = 0; k < q; ++k) {
 					ind = i + m * j + mn * k;
-					c = a[i][j][k];
+					c = a(i, j, k);
 					ppar[ind] = real(c); ppai[ind] = imag(c);
 				}
 	}
@@ -485,7 +485,7 @@ inline void matsave(Mat3Comp_I &a, const std::string &varname, MATFile *pfile,
 			for (j = 0; j < m; ++j)
 				for (k = 0; k < n; ++k) {
 					inda = j + m * k + mn * i;
-					c = a[ind][step1*j][step2*k];
+					c = a(ind, step1*j, step2*k);
 					ppar[inda] = real(c); ppai[inda] = imag(c);
 				}
 		}
@@ -500,7 +500,7 @@ inline void matsave(Mat3Comp_I &a, const std::string &varname, MATFile *pfile,
 			for (k = 0; k < m; ++k)
 				for (i = 0; i < n; ++i) {
 					inda = k + m * i + mn * j;
-					c = a[step2*i][ind][step1*k];
+					c = a(step2*i, ind, step1*k);
 					ppar[inda] = real(c); ppai[inda] = imag(c);
 				}
 		}
@@ -515,13 +515,13 @@ inline void matsave(Mat3Comp_I &a, const std::string &varname, MATFile *pfile,
 			for (i = 0; i < m; ++i)
 				for (j = 0; j < n; ++j) {
 					inda = i + m * j + mn * k;
-					c = a[step1*i][step2*j][ind];
+					c = a(step1*i, step2*j, ind);
 					ppar[inda] = real(c); ppai[inda] = imag(c);
 				}
 		}
 	}
 	else
-		error("illegal value of xyz!")
+		error("illegal value of xyz!");
 	matPutVariable(pfile, varname.c_str(), pa);
 	mxDestroyArray(pa);
 }
@@ -531,7 +531,7 @@ inline void matload(Uchar &i, const std::string &varname, MATFile *pfile)
 	mxArray *ps;
 	ps = matGetVariable(pfile, varname.c_str());
 	if (!mxIsUint8(ps))
-		error("matload(Uchar &i...): wrong type!")
+		error("matload(Uchar &i...): wrong type!");
 	Uchar *pps = (Uchar *)mxGetPr(ps);
 	i = pps[0];
 	mxDestroyArray(ps);
@@ -542,7 +542,7 @@ inline void matload(Int &i, const std::string &varname, MATFile *pfile)
 	mxArray *ps;
 	ps = matGetVariable(pfile, varname.c_str());
 	if (!mxIsInt32(ps))
-		error("matload(Int &i...): wrong type!")
+		error("matload(Int &i...): wrong type!");
 	Int *pps = (Int *)mxGetPr(ps);
 	i = pps[0];
 	mxDestroyArray(ps);
@@ -553,9 +553,9 @@ inline void matload(Doub &s, const std::string &varname, MATFile *pfile)
 	mxArray *ps;
 	ps = matGetVariable(pfile, varname.c_str());
 	if (!mxIsDouble(ps))
-		error("matload(Doub &s...): wrong type!")
+		error("matload(Doub &s...): wrong type!");
 	if (mxIsComplex(ps))
-		error("matload(Doub &s...): wrong type!")
+		error("matload(Doub &s...): wrong type!");
 	auto pps = mxGetPr(ps);
 	s = pps[0];
 	mxDestroyArray(ps);
@@ -582,7 +582,7 @@ inline void matload(VecUchar_O &v, const std::string &varname, MATFile *pfile)
 	mxArray *pv;
 	pv = matGetVariable(pfile, varname.c_str());
 	if (!mxIsUint8(pv))
-		error("matload(VecUchar_O &v...): wrong type!")
+		error("matload(VecUchar_O &v...): wrong type!");
 	n = mxGetDimensions(pv)[1];
 	v.resize(n);
 	Uchar *ppv = (Uchar *)mxGetPr(pv);
@@ -597,7 +597,7 @@ inline void matload(VecInt_O &v, const std::string &varname, MATFile *pfile)
 	mxArray *pv;
 	pv = matGetVariable(pfile, varname.c_str());
 	if (!mxIsInt32(pv))
-		error("matload(VecInt_O &v...): wrong type!")
+		error("matload(VecInt_O &v...): wrong type!");
 	n = mxGetDimensions(pv)[1];
 	v.resize(n);
 	Int *ppv = (Int *)mxGetPr(pv);
@@ -612,9 +612,9 @@ inline void matload(VecDoub_O &v, const std::string &varname, MATFile *pfile)
 	mxArray *pv;
 	pv = matGetVariable(pfile, varname.c_str());
 	if (!mxIsDouble(pv))
-		error("matload(VecDoub_O &v...): wrong type!")
+		error("matload(VecDoub_O &v...): wrong type!");
 	if (mxIsComplex(pv))
-		error("matload(VecDoub_O &v...): wrong type!")
+		error("matload(VecDoub_O &v...): wrong type!");
 	n = mxGetDimensions(pv)[1];
 	v.resize(n);
 	auto ppv = mxGetPr(pv);
@@ -629,7 +629,7 @@ inline void matload(VecComp_O &v, const std::string &varname, MATFile *pfile)
 	mxArray *pv;
 	pv = matGetVariable(pfile, varname.c_str());
 	if (!mxIsDouble(pv))
-		error("matload(VecComp_O &v...): wrong type!")
+		error("matload(VecComp_O &v...): wrong type!");
 	n = mxGetDimensions(pv)[1];
 	v.resize(n);
 	auto ppvr = mxGetPr(pv);
@@ -648,14 +648,14 @@ inline void matload(MatUchar_O &a, const std::string &varname, MATFile *pfile)
 	Long i, j, m, n;
 	mxArray *pa = matGetVariable(pfile, varname.c_str());
 	if (!mxIsUint8(pa))
-		error("matload(MatUchar_O &a...): wrong type!")
+		error("matload(MatUchar_O &a...): wrong type!");
 	const mwSize *sz = mxGetDimensions(pa);
 	m = sz[0]; n = sz[1];
 	a.resize(m, n);
 	Uchar *ppa = (Uchar *)mxGetPr(pa);
 	for (i = 0; i < m; ++i)
 		for (j = 0; j < n; ++j)
-			a[i][j] = ppa[m*j + i];
+			a(i, j) = ppa[m*j + i];
 	mxDestroyArray(pa);
 }
 
@@ -664,14 +664,14 @@ inline void matload(MatInt_O &a, const std::string &varname, MATFile *pfile)
 	Long i, j, m, n;
 	mxArray *pa = matGetVariable(pfile, varname.c_str());
 	if (!mxIsInt32(pa))
-		error("matload(MatInt_O &a...): wrong type!")
+		error("matload(MatInt_O &a...): wrong type!");
 	const mwSize *sz = mxGetDimensions(pa);
 	m = sz[0]; n = sz[1];
 	a.resize(m, n);
 	Int *ppa = (Int *)mxGetPr(pa);
 	for (i = 0; i < m; ++i)
 		for (j = 0; j < n; ++j)
-			a[i][j] = ppa[m*j + i];
+			a(i, j) = ppa[m*j + i];
 	mxDestroyArray(pa);
 }
 
@@ -680,16 +680,16 @@ inline void matload(MatDoub_O &a, const std::string &varname, MATFile *pfile)
 	Long i, j, m, n;
 	mxArray *pa = matGetVariable(pfile, varname.c_str());
 	if (!mxIsDouble(pa))
-		error("matload(MatDoub_O &a...): wrong type!")
+		error("matload(MatDoub_O &a...): wrong type!");
 	if (mxIsComplex(pa))
-		error("matload(MatDoub_O &a...): wrong type!")
+		error("matload(MatDoub_O &a...): wrong type!");
 	const mwSize *sz = mxGetDimensions(pa);
 	m = sz[0]; n = sz[1];
 	a.resize(m, n);
 	auto ppa = mxGetPr(pa);
 	for (i = 0; i < m; ++i)
 		for (j = 0; j < n; ++j)
-			a[i][j] = ppa[m*j + i];
+			a(i, j) = ppa[m*j + i];
 	mxDestroyArray(pa);
 }
 
@@ -699,7 +699,7 @@ inline void matload(MatComp_O &a, const std::string &varname, MATFile *pfile)
 	mxArray *pa;
 	pa = matGetVariable(pfile, varname.c_str());
 	if (!mxIsDouble(pa))
-		error("matload(MatComp_O &a...): wrong type!")
+		error("matload(MatComp_O &a...): wrong type!");
 	const mwSize *sz = mxGetDimensions(pa);
 	m = sz[0]; n = sz[1];
 	a.resize(m, n);
@@ -709,12 +709,12 @@ inline void matload(MatComp_O &a, const std::string &varname, MATFile *pfile)
 		for (i = 0; i < m; ++i)
 		for (j = 0; j < n; ++j){
 			ind = i + m * j;
-			a[i][j] = Comp(ppar[ind], ppai[ind]);
+			a(i, j) = Comp(ppar[ind], ppai[ind]);
 		}
 	else
 		for (i = 0; i < m; ++i)
 		for (j = 0; j < n; ++j)
-			a[i][j] = ppar[i + m*j];
+			a(i, j) = ppar[i + m*j];
 	mxDestroyArray(pa);
 }
 
@@ -723,9 +723,9 @@ inline void matload(Mat3Doub_O &a, const std::string &varname, MATFile *pfile)
 	Long i, j, k, m, n, q, mn;
 	mxArray *pa = matGetVariable(pfile, varname.c_str());
 	if (!mxIsDouble(pa))
-		error("matload(Mat3Doub_O &a...): wrong type!")
+		error("matload(Mat3Doub_O &a...): wrong type!");
 	if (mxIsComplex(pa))
-		error("matload(Mat3Doub_O &a...): wrong type!")
+		error("matload(Mat3Doub_O &a...): wrong type!");
 	const mwSize *sz = mxGetDimensions(pa);
 	m = sz[0]; n = sz[1]; q = sz[2]; mn = m*n;
 	a.resize(m, n, q);
@@ -733,7 +733,7 @@ inline void matload(Mat3Doub_O &a, const std::string &varname, MATFile *pfile)
 	for (i = 0; i < m; ++i)
 	for (j = 0; j < n; ++j)
 	for (k = 0; k < q; ++k)
-		a[i][j][k] = ppa[i + m*j + mn*k];
+		a(i, j, k) = ppa[i + m*j + mn*k];
 	mxDestroyArray(pa);
 }
 
@@ -742,7 +742,7 @@ inline void matload(Mat3Comp_O &a, const std::string &varname, MATFile *pfile)
 	Long i, j, k, m, n, q, mn, ind;
 	mxArray *pa = matGetVariable(pfile, varname.c_str());
 	if (!mxIsDouble(pa))
-		error("matload(Mat3Complex_O &a...): wrong type!")
+		error("matload(Mat3Complex_O &a...): wrong type!");
 	const mwSize *sz = mxGetDimensions(pa);
 	m = sz[0]; n = sz[1]; q = sz[2]; mn = m*n;
 	a.resize(m, n, q);
@@ -753,13 +753,13 @@ inline void matload(Mat3Comp_O &a, const std::string &varname, MATFile *pfile)
 		for (j = 0; j < n; ++j)
 		for (k = 0; k < q; ++k){
 			ind = i + m*j + mn*k;
-			a[i][j][k] = Comp(ppar[ind], ppai[ind]);
+			a(i, j, k) = Comp(ppar[ind], ppai[ind]);
 		}
 	else
 		for (i = 0; i < m; ++i)
 		for (j = 0; j < n; ++j)
 		for (k = 0; k < q; ++k)
-			a[i][j][k] = ppar[i + m*j + mn*k];
+			a(i, j, k) = ppar[i + m*j + mn*k];
 	mxDestroyArray(pa);
 }
 
@@ -842,7 +842,7 @@ MATTFile *mattOpen(std::string fname, Char_I *rw)
 		pfile->rw = 'r';
 		pfile->in = std::ifstream(fname, std::ios_base::binary);
 		if (!pfile->in)
-			error("error: file not found: ")
+			error("error: file not found: ");
 		pfile->in.precision(17);
 		getprofile(pfile); // get var names
 	}
@@ -1062,7 +1062,7 @@ inline void mattsave(MatUchar_I &a, const std::string &varname, MATTFile *pfile,
 	// write matrix data
 	for (j = 0; j < n; ++j)
 		for (i = 0; i < m; ++i) {
-			fout << (Int)a[step1*i][step2*j] << '\n';
+			fout << (Int)a(step1*i, step2*j) << '\n';
 		}
 }
 
@@ -1086,7 +1086,7 @@ inline void mattsave(MatInt_I &a, const std::string &varname, MATTFile *pfile,
 	// write matrix data
 	for (j = 0; j < n; ++j)
 		for (i = 0; i < m; ++i) {
-			fout << a[step1*i][step2*j] << '\n';
+			fout << a(step1*i, step2*j) << '\n';
 		}
 }
 
@@ -1110,7 +1110,7 @@ inline void mattsave(MatDoub_I &a, const std::string &varname, MATTFile *pfile,
 	// write matrix data
 	for (j = 0; j < n; ++j)
 		for (i = 0; i < m; ++i) {
-			fout << a[step1*i][step2*j] << '\n';
+			fout << a(step1*i, step2*j) << '\n';
 		}
 }
 
@@ -1135,7 +1135,7 @@ inline void mattsave(MatComp_I &a, const std::string &varname, MATTFile *pfile,
 	// write matrix data
 	for (j = 0; j < n; ++j)
 		for (i = 0; i < m; ++i) {
-			c = a[step1*i][step2*j]; cr = real(c); ci = imag(c);
+			c = a(step1*i, step2*j); cr = real(c); ci = imag(c);
 			if (ci == 0)
 				fout << cr << '\n';
 			else if (ci < 0)
@@ -1167,7 +1167,7 @@ inline void mattsave(Mat3Doub_I &a, const std::string &varname, MATTFile *pfile,
 	for (k = 0; k < q; ++k)
 	for (j = 0; j < n; ++j)
 	for (i = 0; i < m; ++i)
-		fout << a[step1*i][step2*j][step3*k] << '\n';
+		fout << a(step1*i, step2*j, step3*k) << '\n';
 }
 
 inline void mattsave(Mat3Doub_I &a, const std::string &varname, MATTFile *pfile,
@@ -1193,7 +1193,7 @@ inline void mattsave(Mat3Doub_I &a, const std::string &varname, MATTFile *pfile,
 			ind = slice[i];
 			for (k = 0; k < n; ++k)
 				for (j = 0; j < m; ++j)
-					fout << a[ind][step1*j][step2*k] << '\n';
+					fout << a(ind, step1*j, step2*k) << '\n';
 		}
 	}
 	else if (xyz == 'y') {
@@ -1205,7 +1205,7 @@ inline void mattsave(Mat3Doub_I &a, const std::string &varname, MATTFile *pfile,
 			ind = slice[j];
 			for (i = 0; i < n; ++i)
 				for (k = 0; k < m; ++k)
-					fout << a[step2*i][ind][step1*k] << '\n';
+					fout << a(step2*i, ind, step1*k) << '\n';
 		}
 	}
 	else if (xyz == 'z') {
@@ -1217,11 +1217,11 @@ inline void mattsave(Mat3Doub_I &a, const std::string &varname, MATTFile *pfile,
 			ind = slice[k];
 			for (j = 0; j < n; ++j)
 				for (i = 0; i < m; ++i)
-					fout << a[step1*i][step2*j][ind] << '\n';
+					fout << a(step1*i, step2*j, ind) << '\n';
 		}
 	}
 	else
-		error("illegal value of xyz")
+		error("illegal value of xyz");
 }
 
 inline void mattsave(Mat3Comp_I &a, const std::string &varname, MATTFile *pfile,
@@ -1247,7 +1247,7 @@ inline void mattsave(Mat3Comp_I &a, const std::string &varname, MATTFile *pfile,
 	for (k = 0; k < q; ++k)
 		for (j = 0; j < n; ++j)
 			for (i = 0; i < m; ++i) {
-				c = a[step1*i][step2*j][step3*k]; cr = real(c); ci = imag(c);
+				c = a(step1*i, step2*j, step3*k); cr = real(c); ci = imag(c);
 				if (ci == 0)
 					fout << cr << '\n';
 				else if (ci < 0)
@@ -1282,7 +1282,7 @@ inline void mattsave(Mat3Comp_I &a, const std::string &varname, MATTFile *pfile,
 			for (k = 0; k < n; ++k)
 				for (j = 0; j < m; ++j)
 				{
-					c = a[ind][step1*j][step2*k]; cr = real(c); ci = imag(c);
+					c = a(ind, step1*j, step2*k); cr = real(c); ci = imag(c);
 					if (ci == 0)
 						fout << cr << '\n';
 					else if (ci < 0)
@@ -1302,7 +1302,7 @@ inline void mattsave(Mat3Comp_I &a, const std::string &varname, MATTFile *pfile,
 			ind = slice[j];
 			for (i = 0; i < n; ++i)
 				for (k = 0; k < m; ++k) {
-					c = a[step2*i][ind][step1*k]; cr = real(c); ci = imag(c);
+					c = a(step2*i, ind, step1*k); cr = real(c); ci = imag(c);
 					if (ci == 0)
 						fout << cr << '\n';
 					else if (ci < 0)
@@ -1321,7 +1321,7 @@ inline void mattsave(Mat3Comp_I &a, const std::string &varname, MATTFile *pfile,
 			ind = slice[k];
 			for (j = 0; j < n; ++j)
 				for (i = 0; i < m; ++i) {
-					c = a[step1*i][step2*j][ind]; cr = real(c); ci = imag(c);
+					c = a(step1*i, step2*j, ind); cr = real(c); ci = imag(c);
 					if (ci == 0)
 						fout << cr << '\n';
 					else if (ci < 0)
@@ -1332,7 +1332,7 @@ inline void mattsave(Mat3Comp_I &a, const std::string &varname, MATTFile *pfile,
 		}
 	}
 	else
-		error("illegal value of xyz")
+		error("illegal value of xyz");
 }
 
 // search variable in file by name
@@ -1341,7 +1341,7 @@ inline Int nameSearch(const std::string &name, MATTFile *pfile)
 	for (Int i = 0; i < pfile->n; ++i)
 		if (name == pfile->name[i])
 			return i;
-	error("variable name not found!")
+	error("variable name not found!");
 	return -1;
 }
 
@@ -1370,7 +1370,7 @@ inline void mattload(Uchar &I, const std::string &varname, MATTFile *pfile)
 
 	// read var type and dim
 	if (pfile->type[i] != 3 || pfile->size[i].size() != 0)
-		error("wrong type or dim!")
+		error("wrong type or dim!");
 	// read var data
 	fin >> temp; I = Uchar(temp);
 }
@@ -1384,7 +1384,7 @@ inline void mattload(Int &I, const std::string &varname, MATTFile *pfile)
 	
 	// read var type and dim
 	if (pfile->type[i] < 2 || pfile->size[i].size() != 0)
-		error("wrong type or dim!")
+		error("wrong type or dim!");
 	// read var data
 	fin >> I;
 }
@@ -1398,7 +1398,7 @@ inline void mattload(Doub &I, const std::string &varname, MATTFile *pfile)
 
 	// read var type and dim
 	if (pfile->type[i] == 1 || pfile->size[i].size() != 0)
-		error("wrong type or dim!")
+		error("wrong type or dim!");
 	// read var data
 	fin >> I;
 }
@@ -1412,7 +1412,7 @@ inline void mattload(Comp &I, const std::string &varname, MATTFile *pfile)
 
 	// read var type and dim
 	if (pfile->size[i].size() != 0)
-		error("wrong type or dim!")
+		error("wrong type or dim!");
 	// read var data
 	scanComplex(I, fin);
 }
@@ -1427,7 +1427,7 @@ inline void mattload(VecUchar_O &v, const std::string &varname, MATTFile *pfile)
 	// read var type and dim
 	dim = pfile->size[i].size();
 	if (pfile->type[i] != 3 || dim != 1)
-		error("wrong type or dim!")
+		error("wrong type or dim!");
 	n = pfile->size[i][0]; v.resize(n);
 	// read var data
 	for (i = 0; i < n; ++i) {
@@ -1445,7 +1445,7 @@ inline void mattload(VecInt_O &v, const std::string &varname, MATTFile *pfile)
 	// read var type and dim
 	dim = pfile->size[i].size();
 	if (pfile->type[i] < 2 || dim != 1)
-		error("wrong type or dim!")
+		error("wrong type or dim!");
 	n = pfile->size[i][0]; v.resize(n);
 	// read var data
 	for (i = 0; i < n; ++i)
@@ -1462,7 +1462,7 @@ inline void mattload(VecDoub_O &v, const std::string &varname, MATTFile *pfile)
 	// read var type and dim
 	dim = pfile->size[i].size();
 	if (pfile->type[i] == 1 || dim != 1)
-		error("wrong type or dim!")
+		error("wrong type or dim!");
 	n = pfile->size[i][0]; v.resize(n);
 	// read var data
 	for (i = 0; i < n; ++i)
@@ -1479,7 +1479,7 @@ inline void mattload(VecComp_O &v, const std::string &varname, MATTFile *pfile)
 	// read var type and dim
 	dim = pfile->size[i].size();
 	if (dim != 1)
-		error("wrong type or dim!")
+		error("wrong type or dim!");
 	n = pfile->size[i][0]; v.resize(n);
 	// read var data
 	for (i = 0; i < n; ++i)
@@ -1496,12 +1496,12 @@ inline void mattload(MatUchar_O &a, const std::string &varname, MATTFile *pfile)
 	// read var type and dim
 	dim = pfile->size[i].size();
 	if (pfile->type[i] != 3 || dim != 2)
-		error("wrong type or dim!")
+		error("wrong type or dim!");
 	m = pfile->size[i][0]; n = pfile->size[i][1]; a.resize(m, n);
 	// read var data
 	for (j = 0; j < n; ++j)
 		for (i = 0; i < m; ++i) {
-			fin >> temp;  a[i][j] = (Uchar)temp;
+			fin >> temp;  a(i, j) = (Uchar)temp;
 		}
 }
 
@@ -1515,12 +1515,12 @@ inline void mattload(MatInt_O &a, const std::string &varname, MATTFile *pfile)
 	// read var type and dim
 	dim = pfile->size[i].size();
 	if (pfile->type[i] < 2 || dim != 2)
-		error("wrong type or dim!")
+		error("wrong type or dim!");
 	m = pfile->size[i][0]; n = pfile->size[i][1]; a.resize(m, n);
 	// read var data
 	for (j = 0; j < n; ++j)
 		for (i = 0; i < m; ++i)
-			fin >> a[i][j];
+			fin >> a(i, j);
 }
 
 inline void mattload(MatDoub_O &a, const std::string &varname, MATTFile *pfile)
@@ -1533,12 +1533,12 @@ inline void mattload(MatDoub_O &a, const std::string &varname, MATTFile *pfile)
 	// read var type and dim
 	dim = pfile->size[i].size();
 	if (pfile->type[i] == 1 || dim != 2)
-		error("wrong type or dim!")
+		error("wrong type or dim!");
 	m = pfile->size[i][0]; n = pfile->size[i][1]; a.resize(m, n);
 	// read var data
 	for (j = 0; j < n; ++j)
 		for (i = 0; i < m; ++i)
-			fin >> a[i][j];
+			fin >> a(i, j);
 }
 
 inline void mattload(MatComp_O &a, const std::string &varname, MATTFile *pfile)
@@ -1551,12 +1551,12 @@ inline void mattload(MatComp_O &a, const std::string &varname, MATTFile *pfile)
 	// read var type and dim
 	dim = pfile->size[i].size();
 	if (dim != 2)
-		error("wrong type or dim!")
+		error("wrong type or dim!");
 	m = pfile->size[i][0]; n = pfile->size[i][1]; a.resize(m, n);
 	// read var data
 	for (j = 0; j < n; ++j)
 		for (i = 0; i < m; ++i)
-			scanComplex(a[i][j], fin);
+			scanComplex(a(i, j), fin);
 }
 
 inline void mattload(Mat3Doub_O &a, const std::string &varname, MATTFile *pfile)
@@ -1569,14 +1569,14 @@ inline void mattload(Mat3Doub_O &a, const std::string &varname, MATTFile *pfile)
 	// read var type and dim
 	dim = pfile->size[i].size();
 	if (pfile->type[i] == 1 || dim != 3)
-		error("wrong type or dim!")
+		error("wrong type or dim!");
 	m = pfile->size[i][0]; n = pfile->size[i][1]; q = pfile->size[i][2];
 	a.resize(m, n, q);
 	// read var data
 	for (k = 0; k < q; ++k)
 		for (j = 0; j < n; ++j)
 			for (i = 0; i < m; ++i)
-				fin >> a[i][j][k];
+				fin >> a(i, j, k);
 }
 
 inline void mattload(Mat3Comp_O &a, const std::string &varname, MATTFile *pfile)
@@ -1589,14 +1589,14 @@ inline void mattload(Mat3Comp_O &a, const std::string &varname, MATTFile *pfile)
 	// read var type and dim
 	dim = pfile->size[i].size();
 	if (dim != 3)
-		error("wrong type or dim!")
+		error("wrong type or dim!");
 	m = pfile->size[i][0]; n = pfile->size[i][1]; q = pfile->size[i][2];
 	a.resize(m, n, q);
 	// read var data
 	for (k = 0; k < q; ++k)
 		for (j = 0; j < n; ++j)
 			for (i = 0; i < m; ++i)
-				scanComplex(a[i][j][k], fin);
+				scanComplex(a(i, j, k), fin);
 }
 
 #endif
@@ -1618,7 +1618,7 @@ inline void mat2matt(const std::string &fmat, const std::string &fmatt)
 		const mwSize *sz = mxGetDimensions(pa);
 		if (ndim == 2) {
 			if (sz[0] == 0 || sz[1] == 0)
-				error("empty variable unsupported!")
+				error("empty variable unsupported!");
 			else if (sz[0] == 1 && sz[1] == 1) {
 				// scalar
 				if (mxIsComplex(pa)) {
@@ -1642,7 +1642,7 @@ inline void mat2matt(const std::string &fmat, const std::string &fmatt)
 					mattsave(ch, names[i], pfmatt);
 				}
 				else
-					error("type unsupported!")
+					error("type unsupported!");
 			}
 			else if (sz[0] == 1 || sz[1] == 1) {
 				// save to vector
@@ -1667,7 +1667,7 @@ inline void mat2matt(const std::string &fmat, const std::string &fmatt)
 					mattsave(v, names[i], pfmatt);
 				}
 				else
-					error("type unsupported!")
+					error("type unsupported!");
 			}
 			else {
 				// save to matrix
@@ -1692,7 +1692,7 @@ inline void mat2matt(const std::string &fmat, const std::string &fmatt)
 					mattsave(a, names[i], pfmatt);
 				}
 				else
-					error("type unsupported!")
+					error("type unsupported!");
 			}
 		}
 		else if (ndim == 3) {
@@ -1708,10 +1708,10 @@ inline void mat2matt(const std::string &fmat, const std::string &fmatt)
 				mattsave(a3, names[i], pfmatt);
 			}
 			else
-				error("type unsupported!")
+				error("type unsupported!");
 		}
 		else
-			error("unsupported dimension!")
+			error("unsupported dimension!");
 	}
 	matClose(pfmat);
 	mattClose(pfmatt);
@@ -1719,7 +1719,7 @@ inline void mat2matt(const std::string &fmat, const std::string &fmatt)
 
 inline void matt2mat(const std::string &fmatt, const std::string &fmat)
 {
-	error("this function is not complete")
+	error("this function is not complete");
 }
 #endif
 

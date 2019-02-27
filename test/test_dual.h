@@ -49,24 +49,24 @@ void test_dual()
 	// matrices
 	MatUchar A8(2, 3);
 	A8 = 0;
-	A8[0][0] = 1; A8[0][1] = 3; A8[0][2] = 5; A8[1][2] = 11;
+	A8(0, 0) = 1; A8(0, 1) = 3; A8(0, 2) = 5; A8(1, 2) = 11;
 	matsave(A8, "A8", pfmat);
 	mattsave(A8, "A8", pfmatt);
 
 	MatInt AI(2, 3);
 	AI = 0;
-	AI[0][0] = 1; AI[0][1] = 3; AI[0][2] = 5; AI[1][2] = 11;
+	AI(0, 0) = 1; AI(0, 1) = 3; AI(0, 2) = 5; AI(1, 2) = 11;
 	matsave(AI, "AI", pfmat);
 	mattsave(AI, "AI", pfmatt);
 
 	MatDoub A(2, 3);
 	A = 0;
-	A[0][0] = 1; A[0][1] = 3; A[0][2] = 5; A[1][2] = 11;
+	A(0, 0) = 1; A(0, 1) = 3; A(0, 2) = 5; A(1, 2) = 11;
 	matsave(A, "A", pfmat);
 	mattsave(A, "A", pfmatt);
 
 	MatComp C(3, 3);
-	Comp *pC{ &C[0][0] };
+	Comp *pC{ &C(0, 0) };
 	for (Int i = 0; i < 9; ++i) {
 		pC[i] = 1 + (Doub)i + I * (Doub)i;
 	}
@@ -76,7 +76,7 @@ void test_dual()
 	// 3d arrays
 	Mat3Doub A3;
 	A3.resize(2, 2, 2);
-	Doub *pA3 = A3[0][0];
+	Doub *pA3 = &A3(0, 0, 0);
 	for (Int i = 0; i < 8; ++i)
 		pA3[i] = 1. + (Doub)i;
 	matsave(A3, "A3", pfmat);
@@ -84,7 +84,7 @@ void test_dual()
 
 	Mat3Comp C3;
 	C3.resize(2, 2, 2);
-	Comp *pC3 = C3[0][0];
+	Comp *pC3 = &C3(0, 0, 0);
 	for (Int i = 0; i < 8; ++i)
 		pC3[i] = Comp(1. + (Doub)i, (Doub)i);
 	matsave(C3, "C3", pfmat);
@@ -127,12 +127,7 @@ void test_dual()
 	if (abs(r_sc-sc) > 1e-15) error("failed!");
 
 	// vectors
-	VecUchar r_v8;
-	matload(r_v8, "v8", pfmat);
-	if (r_v8 != v8) error("failed!");
-	r_v8.resize(0);
-	mattload(r_v8, "v8", pfmatt);
-	if (r_v8 != v8) error("failed!");
+	// TODO: Char
 
 	VecInt r_vi;
 	matload(r_vi, "vi", pfmat);
@@ -160,12 +155,7 @@ void test_dual()
 	if (norm(r_v) > 1e-15) error("failed!");
 
 	// matrices
-	MatUchar r_A8;
-	matload(r_A8, "A8", pfmat);
-	if (r_A8 != A8)  error("failed!");
-	r_A8.resize(0, 0);
-	mattload(r_A8, "A8", pfmatt);
-	if (r_A8 != A8) error("failed!");
+	// TODO: Char
 
 	MatInt r_AI;
 	matload(r_AI, "AI", pfmat);
